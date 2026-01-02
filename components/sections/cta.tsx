@@ -3,6 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { ShinyButton } from "@/components/ui/shiny-button";
+import { useAuth } from "@/components/providers/auth-provider";
 
 // Generate dots on client side only
 function AnimatedDots({ isInView }: { isInView: boolean }) {
@@ -52,6 +53,7 @@ function AnimatedDots({ isInView }: { isInView: boolean }) {
 export function CTASection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const { openAuth } = useAuth();
 
   return (
     <section 
@@ -108,7 +110,10 @@ export function CTASection() {
           transition={{ duration: 0.8, delay: 0.5 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <ShinyButton className="font-[family-name:var(--font-smooch-sans)]">
+          <ShinyButton 
+            onClick={() => openAuth("signup")}
+            className="font-[family-name:var(--font-smooch-sans)]"
+          >
             Start Feeling
           </ShinyButton>
         </motion.div>

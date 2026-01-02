@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/components/providers/auth-provider";
 
 export function WorldfeltHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { openAuth } = useAuth();
 
   return (
     <motion.header
@@ -41,13 +43,13 @@ export function WorldfeltHeader() {
             >
               How it works
             </motion.a>
-            <motion.a
-              href="#"
+            <motion.button
+              onClick={() => openAuth("login")}
               whileHover={{ opacity: 0.9 }}
               className="px-4 py-1.5 rounded-full bg-white/[0.06] text-white/60 text-sm font-light tracking-wide hover:bg-white/[0.1] hover:text-white/80 transition-all duration-300"
             >
               Sign in
-            </motion.a>
+            </motion.button>
           </nav>
 
           {/* Mobile menu button */}
@@ -98,13 +100,15 @@ export function WorldfeltHeader() {
                 How it works
               </a>
               <div className="h-px bg-white/[0.06] my-1" />
-              <a
-                href="#"
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-cyan-400/80 text-sm font-light tracking-wide hover:text-cyan-300 hover:bg-white/[0.05] transition-all py-2.5 px-4 rounded-xl"
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  openAuth("login");
+                }}
+                className="text-cyan-400/80 text-sm font-light tracking-wide hover:text-cyan-300 hover:bg-white/[0.05] transition-all py-2.5 px-4 rounded-xl text-left"
               >
                 Sign in
-              </a>
+              </button>
             </motion.div>
           )}
         </AnimatePresence>

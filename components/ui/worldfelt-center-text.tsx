@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { ScrollVelocityRow } from "@/components/ui/scroll-based-velocity";
 import { ShinyButton } from "@/components/ui/shiny-button";
+import { useAuth } from "@/components/providers/auth-provider";
 
 const PHRASES = [
   { text: "Today felt ", feeling: "heavy", color: "text-purple-400" },
@@ -95,6 +96,8 @@ function TypingText({ className }: { className?: string }) {
 }
 
 export function WorldfeltCenterText() {
+  const { openAuth } = useAuth();
+
   return (
     <>
       {/* Full screen dark overlay to make text pop */}
@@ -184,7 +187,10 @@ export function WorldfeltCenterText() {
             transition={{ duration: 1, delay: 2.2 }}
             className="pointer-events-auto"
           >
-            <ShinyButton className="font-[family-name:var(--font-smooch-sans)]">
+            <ShinyButton 
+              onClick={() => openAuth("signup")}
+              className="font-[family-name:var(--font-smooch-sans)]"
+            >
               Start
             </ShinyButton>
           </motion.div>
