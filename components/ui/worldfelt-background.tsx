@@ -28,6 +28,7 @@ interface UserEmotion {
 }
 
 // Pre-defined locations and sample comments - spread across the world
+// Mobile shows Africa/Middle East region, so include markers there
 const SAMPLE_EMOTIONS: Array<{
   lat: number;
   lng: number;
@@ -35,42 +36,42 @@ const SAMPLE_EMOTIONS: Array<{
   comment: string;
   bubblePosition: "left" | "right";
 }> = [
-  { lat: 42, lng: -100, emotion: "calm", comment: "peaceful morning ☀️", bubblePosition: "right" },
-  { lat: 54, lng: 10, emotion: "happy", comment: "feeling grateful 💛", bubblePosition: "left" },
-  { lat: 32, lng: 135, emotion: "tired", comment: "long day ahead 😴", bubblePosition: "right" },
-  { lat: -28, lng: 135, emotion: "sad", comment: "ocean breeze 🌊", bubblePosition: "left" },
-  { lat: 58, lng: -5, emotion: "anxious", comment: "big meeting 😰", bubblePosition: "right" },
-  { lat: 22, lng: 78, emotion: "angry", comment: "so frustrated 😤", bubblePosition: "left" },
-  { lat: -18, lng: -55, emotion: "sad", comment: "missing home 💙", bubblePosition: "right" },
-  { lat: 8, lng: 105, emotion: "tired", comment: "need rest 🌙", bubblePosition: "left" },
-  { lat: 48, lng: -120, emotion: "calm", comment: "quiet evening ✨", bubblePosition: "left" },
-  { lat: -5, lng: 22, emotion: "happy", comment: "good vibes 🌈", bubblePosition: "right" },
+  // Africa (visible on mobile) - 2
+  { lat: 5, lng: 20, emotion: "happy", comment: "good vibes", bubblePosition: "right" },
+  { lat: -15, lng: 30, emotion: "calm", comment: "peaceful morning", bubblePosition: "left" },
+  // America - 2
+  { lat: 40, lng: -100, emotion: "tired", comment: "long day ahead", bubblePosition: "right" },
+  { lat: -15, lng: -60, emotion: "happy", comment: "feeling grateful", bubblePosition: "left" },
+  // Other regions
+  { lat: 54, lng: 10, emotion: "calm", comment: "quiet evening", bubblePosition: "left" },
+  { lat: 32, lng: 135, emotion: "anxious", comment: "big meeting", bubblePosition: "right" },
+  { lat: -28, lng: 135, emotion: "sad", comment: "ocean breeze", bubblePosition: "left" },
+  { lat: 22, lng: 78, emotion: "tired", comment: "need rest", bubblePosition: "left" },
 ];
 
 // Extra messages pool - unique for each emotion (more variety, no repeats)
 const EXTRA_MESSAGES: Record<Emotion, string[]> = {
-  calm: ["breathing deep 🧘", "at peace 🕊️", "feeling zen ☯️", "so relaxed 🌿", "quiet moment 🌸", "inner peace 🪷", "serenity now 🌅", "gentle breeze 🍃"],
-  happy: ["best day ever 🎉", "so excited 🥳", "loving life 💕", "can't stop smiling 😊", "pure joy ✨", "on cloud nine ☁️", "blessed 🙏", "living the dream 💫"],
-  sad: ["feeling low 🥺", "need a hug 💙", "rainy mood 🌧️", "heavy heart 💔", "melancholy 🌑", "tearful 😢", "feeling empty 🖤", "blue today 🫧"],
-  tired: ["exhausted 😩", "running low 🔋", "sleepy vibes 😪", "need coffee ☕", "barely awake 💤", "drained 🥱", "fading fast 🌒", "worn out 😮‍💨"],
-  anxious: ["nervous 😬", "overthinking 🌀", "heart racing 💓", "can't relax 😖", "worried sick 😟", "on edge ⚡", "restless 🌊", "mind racing 💭"],
-  angry: ["so mad 🔥", "not okay 😠", "really upset 💢", "boiling inside 🌋", "losing patience ⚡", "furious 😡", "seeing red 🔴", "had enough 💥"],
+  calm: ["breathing deep", "at peace", "feeling zen", "so relaxed", "quiet moment", "inner peace", "serenity now", "gentle breeze"],
+  happy: ["best day ever", "so excited", "loving life", "can't stop smiling", "pure joy", "on cloud nine", "blessed", "living the dream"],
+  sad: ["feeling low", "need a hug", "rainy mood", "heavy heart", "melancholy", "tearful", "feeling empty", "blue today"],
+  tired: ["exhausted", "running low", "sleepy vibes", "need coffee", "barely awake", "drained", "fading fast", "worn out"],
+  anxious: ["nervous", "overthinking", "heart racing", "can't relax", "worried sick", "on edge", "restless", "mind racing"],
+  angry: ["so mad", "not okay", "really upset", "boiling inside", "losing patience", "furious", "seeing red", "had enough"],
 };
 
-// Extra locations spread across the globe - well spaced out
+// Extra locations spread across the globe
 const EXTRA_LOCATIONS: Array<{ lat: number; lng: number }> = [
-  { lat: 65, lng: -20 },   // Iceland
-  { lat: 35, lng: -115 },  // Nevada
-  { lat: -10, lng: -75 },  // Peru
-  { lat: 50, lng: 90 },    // Mongolia
-  { lat: -25, lng: 28 },   // South Africa
-  { lat: 15, lng: 45 },    // Yemen
-  { lat: 62, lng: 100 },   // Siberia
-  { lat: -45, lng: 170 },  // New Zealand
-  { lat: 5, lng: -60 },    // Venezuela
-  { lat: 40, lng: 45 },    // Armenia
-  { lat: -8, lng: 115 },   // Bali
-  { lat: 28, lng: -15 },   // Canary Islands
+  // Africa - 2
+  { lat: 10, lng: 15 },     // West Africa
+  { lat: -20, lng: 25 },    // Southern Africa
+  // America - 2
+  { lat: 35, lng: -90 },    // Central USA
+  { lat: -25, lng: -55 },   // South America
+  // Other regions
+  { lat: 55, lng: 10 },     // Europe
+  { lat: 50, lng: 90 },     // Asia
+  { lat: -35, lng: 140 },   // Australia
+  { lat: 30, lng: 120 },    // China
 ];
 
 // Convert lat/lng to SVG coordinates
@@ -426,10 +427,10 @@ export function WorldfeltBackground({ className }: WorldfeltBackgroundProps) {
         aria-hidden="true"
       >
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20" />
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.12]">
+        <div className="absolute inset-0 flex items-center justify-center opacity-[0.25]">
           <svg
             viewBox={mapData.viewBox}
-            className="w-full h-full max-w-none text-neutral-500"
+            className="w-[200%] sm:w-full h-full max-w-none text-neutral-500"
             preserveAspectRatio="xMidYMid slice"
             dangerouslySetInnerHTML={{ __html: mapData.content }}
           />
@@ -451,7 +452,7 @@ export function WorldfeltBackground({ className }: WorldfeltBackgroundProps) {
         <svg
           ref={svgRef}
           viewBox={mapData.viewBox}
-          className="w-full h-full max-w-none text-neutral-400/[0.12] dark:text-neutral-500/[0.12]"
+          className="w-[200%] sm:w-full h-full max-w-none text-neutral-400/[0.25] dark:text-neutral-500/[0.25]"
           preserveAspectRatio="xMidYMid slice"
         >
           {/* Base dotted map */}
