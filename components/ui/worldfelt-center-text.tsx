@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { ScrollVelocityRow } from "@/components/ui/scroll-based-velocity";
 import { ShinyButton } from "@/components/ui/shiny-button";
-import { ChevronDown } from "lucide-react";
 
 const PHRASES = [
   { text: "Today felt ", feeling: "heavy", color: "text-purple-400" },
@@ -99,17 +98,17 @@ export function WorldfeltCenterText() {
   return (
     <>
       {/* Full screen dark overlay to make text pop */}
-      <div className="fixed inset-0 z-[5] bg-black/60" />
+      <div className="absolute inset-0 z-[5] bg-black/60" />
       
       {/* Stronger radial gradient for center focus */}
-      <div className="fixed inset-0 z-[6] bg-[radial-gradient(ellipse_80%_50%_at_50%_50%,transparent_20%,rgba(0,0,0,0.8)_100%)]" />
+      <div className="absolute inset-0 z-[6] bg-[radial-gradient(ellipse_80%_50%_at_50%_50%,transparent_20%,rgba(0,0,0,0.8)_100%)]" />
 
       {/* Top scrolling text - now at bottom, goes left */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.5, delay: 2 }}
-        className="fixed bottom-32 sm:bottom-40 left-0 right-0 z-10 pointer-events-none"
+        className="absolute bottom-32 sm:bottom-40 left-0 right-0 z-10 pointer-events-none"
       >
         <ScrollVelocityRow
           baseVelocity={-2}
@@ -130,7 +129,7 @@ export function WorldfeltCenterText() {
         </ScrollVelocityRow>
       </motion.div>
 
-      <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-10">
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
         <div className="relative text-center px-6 max-w-4xl">
           {/* Main title - World appears first, then felt */}
           <h1 className="mb-3 sm:mb-4">
@@ -207,28 +206,12 @@ export function WorldfeltCenterText() {
         </div>
       </div>
 
-      {/* Scroll down indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 3 }}
-        className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2"
-      >
-        <span className="text-white/30 text-xs tracking-[0.2em] uppercase font-[family-name:var(--font-smooch-sans)]">Scroll</span>
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <ChevronDown className="w-6 h-6 text-white/30" />
-        </motion.div>
-      </motion.div>
-
       {/* Bottom scrolling text - goes right */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.5, delay: 2.5 }}
-        className="fixed bottom-20 sm:bottom-24 left-0 right-0 z-10 pointer-events-none"
+        className="absolute bottom-20 sm:bottom-24 left-0 right-0 z-10 pointer-events-none"
       >
         <ScrollVelocityRow
           baseVelocity={3}

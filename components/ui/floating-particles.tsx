@@ -11,6 +11,7 @@ interface Particle {
   duration: number;
   delay: number;
   opacity: number;
+  xDrift: number;
 }
 
 export function FloatingParticles({ count = 30 }: { count?: number }) {
@@ -27,10 +28,13 @@ export function FloatingParticles({ count = 30 }: { count?: number }) {
         duration: Math.random() * 20 + 15,
         delay: Math.random() * 5,
         opacity: Math.random() * 0.3 + 0.1,
+        xDrift: Math.random() * 50 - 25,
       });
     }
     setParticles(newParticles);
   }, [count]);
+
+  if (particles.length === 0) return null;
 
   return (
     <div className="fixed inset-0 z-[4] pointer-events-none overflow-hidden">
@@ -47,7 +51,7 @@ export function FloatingParticles({ count = 30 }: { count?: number }) {
           }}
           animate={{
             y: [0, -100, 0],
-            x: [0, Math.random() * 50 - 25, 0],
+            x: [0, particle.xDrift, 0],
             opacity: [particle.opacity, particle.opacity * 1.5, particle.opacity],
           }}
           transition={{
