@@ -1,36 +1,119 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌍 WorldFelt
 
-## Getting Started
+A calm, emotional, map-first experience. WorldFelt visualizes how people around the world are feeling in real-time, creating a sense of quiet human connection across the globe.
 
-First, run the development server:
+![WorldFelt](https://img.shields.io/badge/WorldFelt-Earth%20at%20Night-0a0a0a?style=for-the-badge)
 
+## ✨ Features
+
+- **Dotted World Map** — A subtle, elegant map background rendered with dots
+- **Emotion Visualization** — Colorful dots representing different emotions appear across the globe
+- **Typing Animation** — Messages appear with a realistic typing effect
+- **Speech Bubbles** — Chat-style bubbles with tails pointing to each location
+- **Breathing Animations** — Soft, pulsing glows that feel alive
+- **Responsive Design** — Optimized for both desktop and mobile
+
+## 🎨 Emotion Color System
+
+| Emotion | Color |
+|---------|-------|
+| 😌 Calm | Bright Cyan Teal |
+| 😊 Happy | Bright Orange |
+| 😢 Sad | Bright Blue |
+| 😴 Tired | Soft Sky Blue |
+| 😰 Anxious | Bright Rose Pink |
+| 😠 Angry | Bright Red |
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js](https://nextjs.org/) 16
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) 4
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Map**: [dotted-map](https://www.npmjs.com/package/dotted-map)
+- **Language**: TypeScript
+- **React**: 19
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm, pnpm, or yarn
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/worldfelt.git
+cd worldfelt
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Run the development server:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Learn More
+## 📁 Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+WorldFelt/
+├── app/
+│   ├── globals.css      # Global styles
+│   ├── layout.tsx       # Root layout
+│   └── page.tsx         # Home page
+├── components/
+│   └── ui/
+│       └── worldfelt-background.tsx  # Main background component
+├── lib/
+│   └── utils.ts         # Utility functions
+└── public/              # Static assets
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🎭 How It Works
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Initial Load**: Dots with emotion messages appear one by one across the globe
+2. **Continuous Updates**: Every 3 seconds, new emotion dots appear in different locations
+3. **Cycling Emotions**: All 6 emotions cycle through, each with unique messages
+4. **Max Display**: Up to 5 extra dots display at once (3 on mobile), oldest ones fade as new ones appear
 
-## Deploy on Vercel
+## 🌟 Design Philosophy
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+WorldFelt is designed to feel like **Earth at night** — quiet, alive, and human. The background:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Never distracts from content
+- Uses soft, breathing animations
+- Creates a sense of global human connection
+- Maintains ~15-20% opacity to stay subtle
+
+## 📱 Responsive Behavior
+
+| Feature | Desktop | Mobile |
+|---------|---------|--------|
+| Initial dots | 10 | 5 |
+| Extra dots (max) | 5 | 3 |
+| Element scale | 1x | 1.5x |
+
+## 🚀 Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme).
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to open issues or submit pull requests.
+
+## 📄 License
+
+MIT License - feel free to use this project for your own purposes.
+
+---
+
+<p align="center">
+  <em>Quiet lights scattered across the Earth at night, suggesting human presence without demanding attention.</em>
+</p>
