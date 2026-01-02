@@ -383,7 +383,9 @@ export function WorldfeltBackground({ className }: WorldfeltBackgroundProps) {
         // If all used, clear oldest and reuse
         if (usedLocationIndices.size > maxExtraDots) {
           const firstUsed = usedLocationIndices.values().next().value;
-          usedLocationIndices.delete(firstUsed);
+          if (firstUsed !== undefined) {
+            usedLocationIndices.delete(firstUsed);
+          }
         }
         
         const location = EXTRA_LOCATIONS[locationIndex];

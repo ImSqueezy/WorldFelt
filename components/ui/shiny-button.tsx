@@ -3,16 +3,18 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-interface ShinyButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ShinyButtonProps {
   children: React.ReactNode;
   className?: string;
+  onClick?: () => void;
+  disabled?: boolean;
 }
 
 export function ShinyButton({
   children,
   className,
-  ...props
+  onClick,
+  disabled,
 }: ShinyButtonProps) {
   return (
     <motion.button
@@ -21,7 +23,8 @@ export function ShinyButton({
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.2 }}
-      {...props}
+      onClick={onClick}
+      disabled={disabled}
       className={cn(
         "relative px-16 sm:px-20 md:px-24 py-4 rounded-full",
         "bg-white/[0.03] backdrop-blur-sm",
