@@ -1,7 +1,5 @@
 # 🌍 WorldFelt
 
-> **⚠️ Backend Status**: The database and API endpoints are set up, but may need environment configuration. You'll need to set up your PostgreSQL database and add the `DATABASE_URL` to your `.env` file. See the [Database Setup](#-database-setup) section below.
-
 A calm, emotional, map-first experience. WorldFelt visualizes how people around the world are feeling in real-time on an interactive 3D globe. No likes, no followers — just raw, honest feelings shared anonymously across the planet.
 
 ![WorldFelt](https://img.shields.io/badge/WorldFelt-Live%20Global%20Emotions-0a0a0a?style=for-the-badge)

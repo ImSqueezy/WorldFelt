@@ -1,4 +1,11 @@
 @import "tailwindcss";
+
+/* iOS Safari safe area support */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
 @import "maplibre-gl/dist/maplibre-gl.css";
 
 :root {

@@ -562,7 +562,10 @@ export function GlobeMap() {
       <div className="fixed top-0 left-0 right-0 h-32 z-[2] pointer-events-none bg-gradient-to-b from-zinc-950 via-zinc-950/50 to-transparent" />
       
       {/* Bottom gradient fade */}
-      <div className="fixed bottom-0 left-0 right-0 h-24 z-[2] pointer-events-none bg-gradient-to-t from-zinc-950 via-zinc-950/30 to-transparent" />
+      <div 
+        className="fixed bottom-0 left-0 right-0 z-[2] pointer-events-none bg-gradient-to-t from-zinc-950 via-zinc-950/30 to-transparent"
+        style={{ height: 'max(6rem, calc(env(safe-area-inset-bottom) + 5rem))' }}
+      />
 
       {/* Floating Comments near dots */}
       <AnimatePresence>
@@ -586,7 +589,8 @@ export function GlobeMap() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 sm:gap-2 px-2 sm:px-0"
+        className="fixed left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 sm:gap-2 px-2 sm:px-0"
+        style={{ bottom: 'max(1.5rem, calc(env(safe-area-inset-bottom) + 0.5rem))' }}
       >
         {/* Drop Pin Button */}
         <motion.button
@@ -823,7 +827,8 @@ export function GlobeMap() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-20"
+            className="fixed left-1/2 -translate-x-1/2 z-20"
+            style={{ bottom: 'max(6rem, calc(env(safe-area-inset-bottom) + 4rem))' }}
           >
             <div className="backdrop-blur-xl border rounded-2xl p-5 min-w-[320px] relative overflow-hidden bg-zinc-900/90 border-white/[0.08]">
               {/* Decorative corner lines */}
