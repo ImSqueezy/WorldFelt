@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { ScrollVelocityRow } from "@/components/ui/scroll-based-velocity";
 import { ShinyButton } from "@/components/ui/shiny-button";
-import { useAuth } from "@/components/providers/auth-provider";
 
 const PHRASES = [
   { text: "Today felt ", feeling: "heavy", color: "text-purple-400" },
@@ -96,7 +96,7 @@ function TypingText({ className }: { className?: string }) {
 }
 
 export function WorldfeltCenterText() {
-  const { openAuth } = useAuth();
+  const router = useRouter();
 
   return (
     <>
@@ -261,7 +261,7 @@ export function WorldfeltCenterText() {
             </motion.div>
 
             <ShinyButton 
-              onClick={() => openAuth("signup")}
+              onClick={() => router.push("/globe")}
               className="font-[family-name:var(--font-smooch-sans)]"
             >
               Start

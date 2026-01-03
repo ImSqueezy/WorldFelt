@@ -191,25 +191,24 @@ function UserMarker({ entry, width, height, isMobile }: UserMarkerProps) {
         Z
       `;
 
+  const glowRadius = 1 * scale;
+  const mainRadius = 0.5 * scale;
+  const centerRadius = 0.15 * scale;
+
   return (
     <motion.g>
       {/* Soft glow behind marker - very subtle */}
       <motion.circle
         cx={x}
         cy={y}
-        r={1 * scale}
+        r={glowRadius || 1}
         fill={color}
-        opacity={0.12}
-        initial={{ opacity: 0, scale: 0 }}
+        initial={{ opacity: 0 }}
         animate={{
           opacity: [0.08, 0.15, 0.08],
-          scale: 1,
-          r: [1 * scale, 1.3 * scale, 1 * scale],
         }}
         transition={{
           opacity: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: entry.delay + 0.5 },
-          scale: { duration: 0.8, delay: entry.delay, ease: "easeOut" },
-          r: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: entry.delay + 0.5 },
         }}
       />
 
@@ -217,11 +216,10 @@ function UserMarker({ entry, width, height, isMobile }: UserMarkerProps) {
       <motion.circle
         cx={x}
         cy={y}
-        r={0.5 * scale}
+        r={mainRadius || 0.5}
         fill={color}
-        opacity={0.5}
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 0.5, scale: 1 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.5 }}
         transition={{
           duration: 0.8,
           delay: entry.delay,
@@ -233,7 +231,7 @@ function UserMarker({ entry, width, height, isMobile }: UserMarkerProps) {
       <motion.circle
         cx={x}
         cy={y}
-        r={0.15 * scale}
+        r={centerRadius || 0.15}
         fill="rgba(255,255,255,0.6)"
         initial={{ opacity: 0 }}
         animate={{

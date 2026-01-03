@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useId } from "react";
 
 interface FloatingBubble {
   id: number;
@@ -82,6 +82,8 @@ export function SideDecorations() {
 
   if (bubbles.length === 0) return null;
 
+  const uniqueId = Math.random().toString(36).substr(2, 9);
+
   return (
     <>
       {/* Left side decorative elements */}
@@ -95,19 +97,19 @@ export function SideDecorations() {
         />
         
         {/* Dots along the line */}
-        {[0.3, 0.5, 0.7].map((pos, i) => (
+        {[0.3, 0.5, 0.7].map((pos, idx) => (
           <motion.div
-            key={i}
+            key={`left-dot-${uniqueId}-${pos}-${idx}`}
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 1.5 + i * 0.2 }}
+            transition={{ duration: 0.5, delay: 1.5 + pos * 0.2 }}
             className="absolute left-16 -translate-x-1/2"
             style={{ top: `${pos * 100}%` }}
           >
             <div className="w-2 h-2 rounded-full bg-cyan-400/30" />
             <motion.div
               animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.1, 0.3] }}
-              transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
+              transition={{ duration: 2, repeat: Infinity, delay: pos * 1.5 }}
               className="absolute inset-0 rounded-full bg-cyan-400/20"
             />
           </motion.div>
@@ -137,19 +139,19 @@ export function SideDecorations() {
         />
         
         {/* Dots along the line */}
-        {[0.3, 0.5, 0.7].map((pos, i) => (
+        {[0.3, 0.5, 0.7].map((pos, idx) => (
           <motion.div
-            key={i}
+            key={`right-dot-${uniqueId}-${pos}-${idx}`}
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 1.7 + i * 0.2 }}
+            transition={{ duration: 0.5, delay: 1.7 + pos * 0.2 }}
             className="absolute right-16 translate-x-1/2"
             style={{ top: `${pos * 100}%` }}
           >
             <div className="w-2 h-2 rounded-full bg-purple-400/30" />
             <motion.div
               animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.1, 0.3] }}
-              transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
+              transition={{ duration: 2, repeat: Infinity, delay: pos * 1.5 }}
               className="absolute inset-0 rounded-full bg-purple-400/20"
             />
           </motion.div>
@@ -171,7 +173,7 @@ export function SideDecorations() {
       {/* Floating feeling bubbles */}
       {bubbles.map((bubble) => (
         <motion.div
-          key={bubble.id}
+          key={`bubble-${uniqueId}-${bubble.id}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ 
             opacity: [0, 0.6, 0.6, 0],
@@ -200,7 +202,7 @@ export function SideDecorations() {
       {/* Floating emotion icons */}
       {icons.map((icon) => (
         <motion.div
-          key={`icon-${icon.id}`}
+          key={`icon-${uniqueId}-${icon.id}`}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ 
             opacity: [0, 0.3, 0.3, 0],

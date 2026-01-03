@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useId } from "react";
 
 // Mini globe component with floating feelings
 function MiniGlobe() {
@@ -90,7 +90,7 @@ function MiniGlobe() {
       {/* Pulse rings */}
       {[0, 1, 2].map((i) => (
         <motion.div
-          key={i}
+          key={`pulse-ring-${i}-${Math.random().toString(36).substr(2, 5)}`}
           animate={{ 
             scale: [1, 1.5, 2],
             opacity: [0.3, 0.1, 0],
@@ -159,12 +159,12 @@ export function ExperienceSection() {
                 { value: "147", label: "Countries" },
                 { value: "24/7", label: "Always On" },
                 { value: "∞", label: "Connections" },
-              ].map((stat, i) => (
+              ].map((stat) => (
                 <motion.div
-                  key={stat.label}
+                  key={`stat-${stat.label}`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.5, delay: 0.4 + i * 0.1 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
                   className="text-center"
                 >
                   <div className="text-2xl sm:text-3xl font-light text-cyan-400/80 font-[family-name:var(--font-smooch-sans)]">

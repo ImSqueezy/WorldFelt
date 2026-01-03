@@ -80,6 +80,7 @@ function ScrollVelocityRowImpl({
   const containerRef = useRef<HTMLDivElement>(null)
   const blockRef = useRef<HTMLDivElement>(null)
   const [numCopies, setNumCopies] = useState(1)
+  const instanceId = useRef(Math.random().toString(36).substring(7))
 
   const baseX = useMotionValue(0)
   const baseDirectionRef = useRef<number>(direction >= 0 ? 1 : -1)
@@ -175,7 +176,7 @@ function ScrollVelocityRowImpl({
       >
         {Array.from({ length: numCopies }).map((_, i) => (
           <div
-            key={i}
+            key={`${instanceId.current}-${i}`}
             ref={i === 0 ? blockRef : null}
             aria-hidden={i !== 0}
             className="inline-flex shrink-0 items-center"

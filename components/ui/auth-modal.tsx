@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { X, Mail, Lock, User, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -12,9 +13,11 @@ interface AuthModalProps {
 }
 
 export function AuthModal({ isOpen, onClose, initialMode = "signup" }: AuthModalProps) {
+  const router = useRouter();
   const [mode, setMode] = useState<"login" | "signup">(initialMode);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   
   // Form state
   const [formData, setFormData] = useState({
@@ -29,19 +32,35 @@ export function AuthModal({ isOpen, onClose, initialMode = "signup" }: AuthModal
       setMode(initialMode);
       setFormData({ name: "", email: "", password: "" });
       setShowPassword(false);
+      setError("");
     }
   }, [isOpen, initialMode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
     
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 800));
     
-    console.log(mode === "login" ? "Logging in..." : "Signing up...", formData);
-    setIsLoading(false);
-    // Handle actual auth logic here
+    // Test credentials: test / test
+    if (formData.email === "test" && formData.password === "test") {
+      // Save auth to localStorage
+      localStorage.setItem("worldfelt_auth", JSON.stringify({ user: "Test User", email: "test" }));
+      setIsLoading(false);
+      onClose();
+      router.push("/globe");
+    } else if (mode === "signup") {
+      // For signup, just accept any credentials for testing
+      localStorage.setItem("worldfelt_auth", JSON.stringify({ user: formData.name || "User", email: formData.email }));
+      setIsLoading(false);
+      onClose();
+      router.push("/globe");
+    } else {
+      setError("Invalid credentials. Use test / test to login.");
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,6 +150,20 @@ export function AuthModal({ isOpen, onClose, initialMode = "signup" }: AuthModal
 
               {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Error message */}
+                <AnimatePresence>
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm font-[family-name:var(--font-smooch-sans)] text-center"
+                    >
+                      {error}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 {/* Name field (signup only) */}
                 <AnimatePresence mode="wait">
                   {mode === "signup" && (
@@ -165,9 +198,9 @@ export function AuthModal({ isOpen, onClose, initialMode = "signup" }: AuthModal
                 <div className="relative">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
                   <input
-                    type="email"
+                    type={mode === "login" ? "text" : "email"}
                     name="email"
-                    placeholder="Email address"
+                    placeholder={mode === "login" ? "Username (try: test)" : "Email address"}
                     value={formData.email}
                     onChange={handleChange}
                     required
@@ -187,7 +220,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signup" }: AuthModal
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
-                    placeholder="Password"
+                    placeholder={mode === "login" ? "Password (try: test)" : "Password"}
                     value={formData.password}
                     onChange={handleChange}
                     required

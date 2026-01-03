@@ -1,18 +1,19 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useId } from "react";
+import { useRouter } from "next/navigation";
 import { ShinyButton } from "@/components/ui/shiny-button";
-import { useAuth } from "@/components/providers/auth-provider";
 
 // Generate dots on client side only
 function AnimatedDots({ isInView }: { isInView: boolean }) {
-  const [dots, setDots] = useState<{ x: number; y: number; delay: number; duration: number }[]>([]);
+  const [dots, setDots] = useState<{ id: string; x: number; y: number; delay: number; duration: number }[]>([]);
 
   useEffect(() => {
     // Generate random positions on client only
     setDots(
-      [...Array(20)].map(() => ({
+      [...Array(20)].map((_, i) => ({
+        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${i}`,
         x: Math.random() * 100,
         y: Math.random() * 100,
         delay: Math.random() * 3,
@@ -25,9 +26,9 @@ function AnimatedDots({ isInView }: { isInView: boolean }) {
 
   return (
     <>
-      {dots.map((dot, i) => (
+      {dots.map((dot) => (
         <motion.div
-          key={i}
+          key={dot.id}
           className="absolute w-1 h-1 rounded-full bg-cyan-400/20"
           style={{
             left: `${dot.x}%`,
@@ -53,7 +54,7 @@ function AnimatedDots({ isInView }: { isInView: boolean }) {
 export function CTASection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const { openAuth } = useAuth();
+  const router = useRouter();
 
   return (
     <section 
@@ -111,7 +112,7 @@ export function CTASection() {
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <ShinyButton 
-            onClick={() => openAuth("signup")}
+            onClick={() => router.push("/globe")}
             className="font-[family-name:var(--font-smooch-sans)]"
           >
             Start Feeling

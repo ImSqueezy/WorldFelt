@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useId } from "react";
 import { AnimatedList } from "@/components/ui/animated-list";
 import { cn } from "@/lib/utils";
 
@@ -63,8 +63,17 @@ const feelings: FeelingNotification[] = [
   },
 ];
 
-// Duplicate to create infinite loop effect
-const allFeelings = [...feelings, ...feelings, ...feelings];
+// Duplicate to create infinite loop effect with unique IDs
+const allFeelings = feelings.flatMap((feeling, idx) => 
+  [0, 1, 2].map(copy => ({
+    ...feeling,
+    uniqueId: `${feeling.location.replace(/[^a-z]/gi, '')}-${idx}-${copy}`
+  }))
+);
+
+interface FeelingWithId extends FeelingNotification {
+  uniqueId: string;
+}
 
 function FeelingItem({ name, location, feeling, time }: FeelingNotification) {
   return (
@@ -180,8 +189,8 @@ export function WhatIsSection() {
             <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-zinc-950 to-transparent z-10 pointer-events-none" />
             
             <AnimatedList delay={2000} className="pt-4">
-              {allFeelings.map((feeling, idx) => (
-                <FeelingItem key={idx} {...feeling} />
+              {allFeelings.map((feeling) => (
+                <FeelingItem key={feeling.uniqueId} {...feeling} />
               ))}
             </AnimatedList>
           </motion.div>

@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "@/components/providers/auth-provider";
 
 export function WorldfeltHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { openAuth } = useAuth();
+  const router = useRouter();
 
   return (
     <motion.header
@@ -44,11 +44,11 @@ export function WorldfeltHeader() {
               How it works
             </motion.a>
             <motion.button
-              onClick={() => openAuth("login")}
+              onClick={() => router.push("/globe")}
               whileHover={{ opacity: 0.9 }}
               className="px-4 py-1.5 rounded-full bg-white/[0.06] text-white/60 text-sm font-light tracking-wide hover:bg-white/[0.1] hover:text-white/80 transition-all duration-300"
             >
-              Sign in
+              Enter
             </motion.button>
           </nav>
 
@@ -103,11 +103,11 @@ export function WorldfeltHeader() {
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  openAuth("login");
+                  router.push("/globe");
                 }}
                 className="text-cyan-400/80 text-sm font-light tracking-wide hover:text-cyan-300 hover:bg-white/[0.05] transition-all py-2.5 px-4 rounded-xl text-left"
               >
-                Sign in
+                Enter
               </button>
             </motion.div>
           )}

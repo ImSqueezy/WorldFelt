@@ -29,7 +29,8 @@ A calm, emotional, map-first experience. WorldFelt visualizes how people around 
 - **Framework**: [Next.js](https://nextjs.org/) 16
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/) 4
 - **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **Map**: [dotted-map](https://www.npmjs.com/package/dotted-map)
+- **3D Globe**: [MapLibre GL](https://maplibre.org/)
+- **Database**: [PostgreSQL](https://www.postgresql.org/) with [Prisma](https://www.prisma.io/)
 - **Language**: TypeScript
 - **React**: 19
 
@@ -39,6 +40,7 @@ A calm, emotional, map-first experience. WorldFelt visualizes how people around 
 
 - Node.js 18+
 - npm, pnpm, or yarn
+- PostgreSQL database
 
 ### Installation
 
@@ -47,6 +49,50 @@ A calm, emotional, map-first experience. WorldFelt visualizes how people around 
 git clone https://github.com/yourusername/worldfelt.git
 cd worldfelt
 ```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Set up your database:
+
+Create a `.env` file in the root directory:
+```bash
+DATABASE_URL="postgresql://user:password@localhost:5432/worldfelt?schema=public"
+```
+
+4. Run Prisma migrations:
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+5. Start the development server:
+```bash
+npm run dev
+```
+
+### Database Setup
+
+The app uses PostgreSQL with Prisma. The schema includes:
+
+- **Feeling model**: Stores user feelings with latitude, longitude, feeling type, optional comment, and timestamp
+- Automatically indexes by creation date for performance
+- Limits queries to last 100 feelings
+
+### API Endpoints
+
+- `GET /api/feelings` - Fetch all feelings (last 100)
+- `POST /api/feelings` - Create a new feeling
+  ```json
+  {
+    "latitude": 37.7749,
+    "longitude": -122.4194,
+    "feeling": "hopeful",
+    "comment": "the fog cleared today"
+  }
+  ```
 
 2. Install dependencies:
 ```bash
