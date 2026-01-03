@@ -35,29 +35,34 @@ const SAMPLE_FEELINGS = [
 // Floating comment bubble component
 function FloatingComment({ 
   feeling, 
-  position, 
+  position,
+  opacity,
   onClick 
 }: { 
   feeling: typeof SAMPLE_FEELINGS[0]; 
   position: { x: number; y: number } | null;
+  opacity: number;
   onClick: () => void;
 }) {
   if (!position) return null;
   
+  const isFar = opacity < 0.7;
+  
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8, y: 10 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
+      animate={{ opacity: opacity, scale: isFar ? 0.85 : 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.8, y: 10 }}
       className="absolute pointer-events-auto cursor-pointer z-10"
       style={{ 
         left: position.x + 20, 
         top: position.y - 30,
-        transform: 'translate(0, -50%)'
+        transform: 'translate(0, -50%)',
+        filter: isFar ? 'blur(0.5px)' : 'none'
       }}
       onClick={onClick}
     >
-      <div className="relative max-w-[180px] px-3 py-2 rounded-xl bg-zinc-900/90 border border-white/[0.08] backdrop-blur-sm">
+      <div className={`relative max-w-[180px] px-3 py-2 rounded-xl bg-zinc-900/90 border border-white/[0.08] backdrop-blur-sm transition-all ${isFar ? 'hover:opacity-100' : ''}`}>
         {/* Arrow pointing to dot */}
         <div 
           className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 w-0 h-0 
@@ -92,7 +97,7 @@ export function GlobeMap() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedFeeling, setSelectedFeeling] = useState<typeof SAMPLE_FEELINGS[0] | null>(null);
   const [isRotating, setIsRotating] = useState(true);
-  const [visibleComments, setVisibleComments] = useState<Map<number, { x: number; y: number }>>(new Map());
+  const [visibleComments, setVisibleComments] = useState<Map<number, { x: number; y: number; opacity: number }>>(new Map());
   const [showShareModal, setShowShareModal] = useState(false);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
@@ -463,18 +468,31 @@ export function GlobeMap() {
       const updateCommentPositions = () => {
         if (!map.current) return;
         
-        const newPositions = new Map<number, { x: number; y: number }>();
+        const newPositions = new Map<number, { x: number; y: number; opacity: number }>();
         const bounds = map.current.getBounds();
         const zoom = map.current.getZoom();
+        const center = map.current.getCenter();
         
         feelings.forEach((feeling) => {
           // Check if point is in view
           if (bounds && bounds.contains([feeling.lng, feeling.lat])) {
             const point = map.current!.project([feeling.lng, feeling.lat]);
             
+            // Calculate angular distance from center to determine if on "back" of globe
+            const lngDiff = Math.abs(feeling.lng - center.lng);
+            const latDiff = Math.abs(feeling.lat - center.lat);
+            const angularDistance = Math.sqrt(lngDiff * lngDiff + latDiff * latDiff);
+            
+            // Calculate opacity based on distance from center (farther = more faded)
+            // Points near the edge (> 60 degrees away) start to fade
+            let opacity = 1;
+            if (angularDistance > 60) {
+              opacity = Math.max(0.3, 1 - (angularDistance - 60) / 60);
+            }
+            
             // Only show comments at certain zoom levels and if point is on screen
             if (zoom > 1.5 && point.x > 50 && point.x < window.innerWidth - 200 && point.y > 50 && point.y < window.innerHeight - 100) {
-              newPositions.set(feeling.id, { x: point.x, y: point.y });
+              newPositions.set(feeling.id, { x: point.x, y: point.y, opacity });
             }
           }
         });
@@ -578,6 +596,7 @@ export function GlobeMap() {
               key={id}
               feeling={feeling}
               position={position}
+              opacity={position.opacity}
               onClick={() => handleFeelingClick(feeling)}
             />
           );
