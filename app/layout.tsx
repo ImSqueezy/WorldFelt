@@ -49,6 +49,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${exo2.variable} ${smoochSans.variable} ${orbitron.variable} bg-zinc-950`}
       >
         {children}
+        
+        {/* Fixed bottom-left credit */}
+        <div className="fixed bottom-4 left-4 z-50 pointer-events-none">
+          <p className="text-xs text-white/50 font-['Exo_2']">
+            Made with ❤️ by maghri
+          </p>
+        </div>
       </body>
     </html>
   );
