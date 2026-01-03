@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Exo_2, Smooch_Sans, Orbitron } from "next/font/google";
 import "./globals.css";
+import { BackgroundMusic } from "@/components/ui/background-music";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,6 +50,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${exo2.variable} ${smoochSans.variable} ${orbitron.variable} bg-zinc-950`}
       >
         {children}
+        
+        {/* Background Music Player */}
+        <BackgroundMusic />
         
         {/* Fixed bottom-left credit */}
         <div className="fixed bottom-4 left-4 z-50 pointer-events-none">

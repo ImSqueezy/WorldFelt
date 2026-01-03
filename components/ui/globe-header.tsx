@@ -2,10 +2,35 @@
 
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { LogOut, Volume2, VolumeX } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 
 export function GlobeHeader() {
   const router = useRouter();
+  const [isPlaying, setIsPlaying] = useState(true);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    // Get audio element from parent if it exists
+    const audio = document.querySelector('audio') as HTMLAudioElement;
+    if (audio) {
+      audioRef.current = audio;
+      setIsPlaying(!audio.paused);
+    }
+  }, []);
+
+  const toggleMusic = () => {
+    const audio = document.querySelector('audio') as HTMLAudioElement;
+    if (audio) {
+      if (audio.paused) {
+        audio.play();
+        setIsPlaying(true);
+      } else {
+        audio.pause();
+        setIsPlaying(false);
+      }
+    }
+  };
 
   return (
     <motion.header
@@ -43,18 +68,36 @@ export function GlobeHeader() {
           </div>
         </div>
 
-        {/* Logout button */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => router.push("/")}
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] transition-colors text-white/60 hover:text-white"
-        >
-          <LogOut className="w-4 h-4" />
-          <span className="text-sm font-[family-name:var(--font-smooch-sans)] hidden sm:block">
-            Exit
-          </span>
-        </motion.button>
+        {/* Logout and Sound buttons */}
+        <div className="flex items-center gap-2">
+          {/* Sound toggle */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={toggleMusic}
+            className="flex items-center justify-center w-9 h-9 sm:w-auto sm:h-auto sm:px-4 sm:py-2 rounded-full bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] transition-colors text-white/60 hover:text-white"
+            aria-label={isPlaying ? "Mute music" : "Play music"}
+          >
+            {isPlaying ? (
+              <Volume2 className="w-4 h-4" />
+            ) : (
+              <VolumeX className="w-4 h-4" />
+            )}
+          </motion.button>
+          
+          {/* Exit button */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => router.push("/")}
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] transition-colors text-white/60 hover:text-white"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="text-sm font-[family-name:var(--font-smooch-sans)] hidden sm:block">
+              Exit
+            </span>
+          </motion.button>
+        </div>
       </div>
     </motion.header>
   );
