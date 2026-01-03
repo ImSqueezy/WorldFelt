@@ -105,8 +105,43 @@ export function GlobeMap() {
   const [shareMessage, setShareMessage] = useState("");
   const [feelings, setFeelings] = useState(SAMPLE_FEELINGS);
   const [isLoadingFeelings, setIsLoadingFeelings] = useState(true);
+  const [currentFeelingIndex, setCurrentFeelingIndex] = useState(0);
   const rotationRef = useRef<number | null>(null);
   const isUserInteracting = useRef(false);
+
+  // Navigate to previous feeling
+  const goToPrevFeeling = () => {
+    if (feelings.length === 0) return;
+    const newIndex = currentFeelingIndex === 0 ? feelings.length - 1 : currentFeelingIndex - 1;
+    setCurrentFeelingIndex(newIndex);
+    flyToFeeling(feelings[newIndex]);
+  };
+
+  // Navigate to next feeling
+  const goToNextFeeling = () => {
+    if (feelings.length === 0) return;
+    const newIndex = currentFeelingIndex === feelings.length - 1 ? 0 : currentFeelingIndex + 1;
+    setCurrentFeelingIndex(newIndex);
+    flyToFeeling(feelings[newIndex]);
+  };
+
+  // Fly to a specific feeling
+  const flyToFeeling = (feeling: typeof SAMPLE_FEELINGS[0]) => {
+    if (!map.current) return;
+    
+    map.current.flyTo({
+      center: [feeling.lng, feeling.lat],
+      zoom: 3,
+      duration: 1500,
+      essential: true
+    });
+    
+    setSelectedFeeling(feeling);
+    isUserInteracting.current = true;
+    setTimeout(() => {
+      isUserInteracting.current = false;
+    }, 5000);
+  };
 
   // Load feelings from API
   useEffect(() => {
@@ -611,6 +646,19 @@ export function GlobeMap() {
         className="fixed left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 sm:gap-2 px-2 sm:px-0"
         style={{ bottom: 'max(1.5rem, calc(env(safe-area-inset-bottom) + 0.5rem))' }}
       >
+        {/* Previous Feeling Button - Mobile only */}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={goToPrevFeeling}
+          className="w-9 h-9 sm:hidden rounded-lg flex items-center justify-center transition-all bg-zinc-900/90 border border-white/[0.08] hover:bg-zinc-800/90 backdrop-blur-xl text-white/70 hover:text-white"
+          title="Previous feeling"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </motion.button>
+
         {/* Drop Pin Button */}
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -723,6 +771,19 @@ export function GlobeMap() {
             <span className="hidden sm:inline"> feelings live</span>
           </p>
         </div>
+
+        {/* Next Feeling Button - Mobile only */}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={goToNextFeeling}
+          className="w-9 h-9 sm:hidden rounded-lg flex items-center justify-center transition-all bg-zinc-900/90 border border-white/[0.08] hover:bg-zinc-800/90 backdrop-blur-xl text-white/70 hover:text-white"
+          title="Next feeling"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </motion.button>
       </motion.div>
 
       {/* Share Feeling Modal */}

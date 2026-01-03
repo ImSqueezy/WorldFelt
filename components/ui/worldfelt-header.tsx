@@ -30,16 +30,24 @@ export function WorldfeltHeader() {
           {/* Right side nav - hidden on mobile */}
           <nav className="hidden md:flex items-center gap-5">
             <motion.a
-              href="#"
+              href="#what-is-section"
               whileHover={{ opacity: 0.9 }}
               className="text-white/40 text-sm font-light tracking-wide hover:text-white/70 transition-colors duration-300"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('what-is-section')?.scrollIntoView({ behavior: 'smooth' });
+              }}
             >
               About
             </motion.a>
             <motion.a
-              href="#"
+              href="#experience-section"
               whileHover={{ opacity: 0.9 }}
               className="text-white/40 text-sm font-light tracking-wide hover:text-white/70 transition-colors duration-300"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('experience-section')?.scrollIntoView({ behavior: 'smooth' });
+              }}
             >
               How it works
             </motion.a>
@@ -86,15 +94,23 @@ export function WorldfeltHeader() {
               className="md:hidden absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 p-3 rounded-2xl bg-zinc-900/95 border border-white/[0.08] backdrop-blur-md flex flex-col gap-1"
             >
               <a
-                href="#"
-                onClick={() => setMobileMenuOpen(false)}
+                href="#what-is-section"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileMenuOpen(false);
+                  document.getElementById('what-is-section')?.scrollIntoView({ behavior: 'smooth' });
+                }}
                 className="text-white/60 text-sm font-light tracking-wide hover:text-white/90 hover:bg-white/[0.05] transition-all py-2.5 px-4 rounded-xl"
               >
                 About
               </a>
               <a
-                href="#"
-                onClick={() => setMobileMenuOpen(false)}
+                href="#experience-section"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileMenuOpen(false);
+                  document.getElementById('experience-section')?.scrollIntoView({ behavior: 'smooth' });
+                }}
                 className="text-white/60 text-sm font-light tracking-wide hover:text-white/90 hover:bg-white/[0.05] transition-all py-2.5 px-4 rounded-xl"
               >
                 How it works
