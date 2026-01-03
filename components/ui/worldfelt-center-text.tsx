@@ -115,46 +115,45 @@ export function WorldfeltCenterText() {
       >
         <ScrollVelocityRow
           baseVelocity={-2}
-          className="opacity-[0.3]"
+          className="opacity-[0.25]"
         >
-          <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight font-[family-name:var(--font-smooch-sans)] tracking-[0.15em] mx-10 text-cyan-300">
+          <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight font-[family-name:var(--font-smooch-sans)] tracking-[0.15em] mx-10 text-white/60">
             breathe
           </span>
-          <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight mx-6 text-white/30">✦</span>
-          <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight font-[family-name:var(--font-smooch-sans)] tracking-[0.15em] mx-10 text-purple-300">
+          <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight mx-6 text-cyan-400/40">·</span>
+          <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight font-[family-name:var(--font-smooch-sans)] tracking-[0.15em] mx-10 text-white/60">
             reflect
           </span>
-          <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight mx-6 text-white/30">✦</span>
-          <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight font-[family-name:var(--font-smooch-sans)] tracking-[0.15em] mx-10 text-rose-300">
+          <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight mx-6 text-cyan-400/40">·</span>
+          <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight font-[family-name:var(--font-smooch-sans)] tracking-[0.15em] mx-10 text-white/60">
             belong
           </span>
-          <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight mx-6 text-white/30">✦</span>
+          <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extralight mx-6 text-cyan-400/40">·</span>
         </ScrollVelocityRow>
       </motion.div>
 
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
         <div className="relative text-center px-6 max-w-4xl">
-          {/* Main title - World appears first, then felt */}
-          <h1 className="mb-3 sm:mb-4">
+          {/* Main title - World and Felt side by side */}
+          <h1 className="mb-3 sm:mb-4 whitespace-nowrap">
             {/* World - appears first */}
             <motion.span
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
-              className="inline-block text-7xl sm:text-8xl md:text-9xl lg:text-[10rem] font-thin text-white tracking-[-0.02em] font-[family-name:var(--font-smooch-sans)]"
+              className="inline text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-medium text-white tracking-[-0.02em] font-[family-name:var(--font-orbitron)]"
             >
               World
             </motion.span>
             
-            {/* felt - appears after with cyan gradient */}
+            {/* Felt - appears after with cyan gradient */}
             <motion.span
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2, delay: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-              className="inline-block text-7xl sm:text-8xl md:text-9xl lg:text-[10rem] font-medium bg-gradient-to-r from-cyan-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent tracking-[-0.02em] ml-3 sm:ml-4 md:ml-6"
-              style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+              className="inline text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-semibold bg-gradient-to-r from-cyan-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent tracking-[-0.02em] ml-2 sm:ml-3 md:ml-4 font-[family-name:var(--font-orbitron)]"
             >
-              felt
+              Felt
             </motion.span>
           </h1>
 
@@ -180,13 +179,87 @@ export function WorldfeltCenterText() {
             />
           </motion.div>
 
-          {/* Shiny Button */}
+          {/* Shiny Button with decorative elements */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 2.2 }}
-            className="pointer-events-auto"
+            className="pointer-events-auto relative"
           >
+            {/* Left decorative line */}
+            <motion.div
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{ scaleX: 1, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 2.6 }}
+              className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-[140px] sm:-translate-x-[160px] md:-translate-x-[180px] origin-right hidden sm:flex items-center gap-2"
+            >
+              <motion.div
+                animate={{ opacity: [0.3, 0.6, 0.3] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                className="w-1.5 h-1.5 rounded-full bg-cyan-400/50"
+              />
+              <div className="w-12 sm:w-16 md:w-20 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-cyan-400/50" />
+              <motion.div
+                animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0.7, 0.4] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                className="w-1 h-1 rounded-full bg-cyan-400/60"
+              />
+            </motion.div>
+
+            {/* Right decorative line */}
+            <motion.div
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{ scaleX: 1, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 2.6 }}
+              className="absolute right-1/2 top-1/2 -translate-y-1/2 translate-x-[140px] sm:translate-x-[160px] md:translate-x-[180px] origin-left hidden sm:flex items-center gap-2"
+            >
+              <motion.div
+                animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0.7, 0.4] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                className="w-1 h-1 rounded-full bg-purple-400/60"
+              />
+              <div className="w-12 sm:w-16 md:w-20 h-px bg-gradient-to-l from-transparent via-purple-400/30 to-purple-400/50" />
+              <motion.div
+                animate={{ opacity: [0.3, 0.6, 0.3] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                className="w-1.5 h-1.5 rounded-full bg-purple-400/50"
+              />
+            </motion.div>
+
+            {/* Floating sparkles around button */}
+            <motion.div
+              animate={{ 
+                y: [0, -8, 0],
+                opacity: [0.4, 0.8, 0.4],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute -top-4 left-1/2 -translate-x-8 text-xs text-cyan-400/50"
+            >
+              ✦
+            </motion.div>
+            <motion.div
+              animate={{ 
+                y: [0, -6, 0],
+                opacity: [0.3, 0.7, 0.3],
+                scale: [1, 1.2, 1]
+              }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+              className="absolute -top-3 left-1/2 translate-x-6 text-[10px] text-purple-400/50"
+            >
+              ✦
+            </motion.div>
+            <motion.div
+              animate={{ 
+                y: [0, 6, 0],
+                opacity: [0.3, 0.6, 0.3],
+              }}
+              transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
+              className="absolute -bottom-3 left-1/2 -translate-x-4 text-[10px] text-cyan-400/40"
+            >
+              ·
+            </motion.div>
+
             <ShinyButton 
               onClick={() => openAuth("signup")}
               className="font-[family-name:var(--font-smooch-sans)]"
@@ -221,20 +294,20 @@ export function WorldfeltCenterText() {
       >
         <ScrollVelocityRow
           baseVelocity={3}
-          className="opacity-[0.3]"
+          className="opacity-[0.2]"
         >
-          <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight font-[family-name:var(--font-smooch-sans)] tracking-[0.2em] mx-12 text-amber-300">
+          <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight font-[family-name:var(--font-smooch-sans)] tracking-[0.2em] mx-12 text-white/50">
             feel together
           </span>
-          <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight mx-8 text-white/20">•</span>
-          <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight font-[family-name:var(--font-smooch-sans)] tracking-[0.2em] mx-12 text-emerald-300">
+          <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight mx-8 text-cyan-400/30">·</span>
+          <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight font-[family-name:var(--font-smooch-sans)] tracking-[0.2em] mx-12 text-white/50">
             share moments
           </span>
-          <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight mx-8 text-white/20">•</span>
-          <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight font-[family-name:var(--font-smooch-sans)] tracking-[0.2em] mx-12 text-blue-300">
+          <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight mx-8 text-cyan-400/30">·</span>
+          <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight font-[family-name:var(--font-smooch-sans)] tracking-[0.2em] mx-12 text-white/50">
             connect globally
           </span>
-          <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight mx-8 text-white/20">•</span>
+          <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight mx-8 text-cyan-400/30">·</span>
         </ScrollVelocityRow>
       </motion.div>
     </>

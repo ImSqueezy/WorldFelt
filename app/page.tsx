@@ -4,6 +4,7 @@ import { WorldfeltHeader } from "@/components/ui/worldfelt-header";
 import { FloatingParticles } from "@/components/ui/floating-particles";
 import { CursorGlow } from "@/components/ui/cursor-glow";
 import { ScrollIndicator } from "@/components/ui/scroll-indicator";
+import { SideDecorations } from "@/components/ui/side-decorations";
 import { WhatIsSection } from "@/components/sections/what-is";
 import { ExperienceSection } from "@/components/sections/experience";
 import { CTASection } from "@/components/sections/cta";
@@ -15,10 +16,11 @@ export default function Home() {
       <ScrollIndicator />
 
       {/* Hero Section - Full screen with map background */}
-      <section id="hero" className="relative h-screen">
+      <section id="hero" className="relative h-screen overflow-hidden">
         <WorldfeltBackground />
-        <FloatingParticles count={25} />
+        <FloatingParticles count={40} />
         <CursorGlow />
+        <SideDecorations />
         <WorldfeltCenterText />
         <WorldfeltHeader />
       </section>

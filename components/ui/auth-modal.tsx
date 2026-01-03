@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Mail, Lock, User, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +22,15 @@ export function AuthModal({ isOpen, onClose, initialMode = "signup" }: AuthModal
     email: "",
     password: "",
   });
+
+  // Reset form and sync mode when modal opens/closes or initialMode changes
+  useEffect(() => {
+    if (isOpen) {
+      setMode(initialMode);
+      setFormData({ name: "", email: "", password: "" });
+      setShowPassword(false);
+    }
+  }, [isOpen, initialMode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +72,17 @@ export function AuthModal({ isOpen, onClose, initialMode = "signup" }: AuthModal
             transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md p-6"
           >
-            <div className="relative bg-zinc-950 border border-white/[0.08] rounded-3xl p-8 shadow-2xl">
+            <div className="relative bg-zinc-950 border border-white/[0.08] rounded-3xl p-8 shadow-2xl overflow-hidden">
+              {/* Decorative gradient orbs */}
+              <div className="absolute -top-20 -left-20 w-40 h-40 rounded-full bg-cyan-400/[0.05] blur-3xl pointer-events-none" />
+              <div className="absolute -bottom-20 -right-20 w-40 h-40 rounded-full bg-purple-400/[0.05] blur-3xl pointer-events-none" />
+              
+              {/* Decorative corner lines */}
+              <div className="absolute top-0 left-8 w-px h-16 bg-gradient-to-b from-cyan-400/20 to-transparent" />
+              <div className="absolute top-8 left-0 h-px w-16 bg-gradient-to-r from-cyan-400/20 to-transparent" />
+              <div className="absolute bottom-0 right-8 w-px h-16 bg-gradient-to-t from-purple-400/20 to-transparent" />
+              <div className="absolute bottom-8 right-0 h-px w-16 bg-gradient-to-l from-purple-400/20 to-transparent" />
+
               {/* Close button */}
               <button
                 onClick={onClose}
@@ -73,7 +92,29 @@ export function AuthModal({ isOpen, onClose, initialMode = "signup" }: AuthModal
               </button>
 
               {/* Header */}
-              <div className="text-center mb-8">
+              <div className="text-center mb-8 relative">
+                {/* Floating sparkles */}
+                <motion.span
+                  animate={{ 
+                    y: [0, -5, 0],
+                    opacity: [0.3, 0.6, 0.3]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute -top-2 left-1/4 text-xs text-cyan-400/40"
+                >
+                  ✦
+                </motion.span>
+                <motion.span
+                  animate={{ 
+                    y: [0, -4, 0],
+                    opacity: [0.2, 0.5, 0.2]
+                  }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                  className="absolute -top-1 right-1/4 text-[10px] text-purple-400/40"
+                >
+                  ✦
+                </motion.span>
+                
                 <h2 className="text-3xl font-thin text-white font-[family-name:var(--font-smooch-sans)] tracking-wide mb-2">
                   {mode === "login" ? "Welcome back" : "Join"}{" "}
                   <span className="bg-gradient-to-r from-cyan-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent font-medium">
