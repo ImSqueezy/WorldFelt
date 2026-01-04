@@ -41,14 +41,14 @@ const SAMPLE_FEELINGS = [
   { id: -20, lng: -79.3832, lat: 43.6532, feeling: "hopeful", user: "someone in Toronto", color: "#22d3ee", time: "1h ago", message: "diverse and vibrant" },
 ];
 
-// Group feelings by approximate location (within 0.5 degrees)
+// Group feelings by approximate location (within 0.1 degrees ~ 11km for clustering)
 function groupFeelingsByLocation(feelings: typeof SAMPLE_FEELINGS) {
   const groups: Map<string, typeof SAMPLE_FEELINGS> = new Map();
   
   feelings.forEach(feeling => {
-    // Round to 0.5 degree precision for grouping nearby feelings
-    const keyLat = Math.round(feeling.lat * 2) / 2;
-    const keyLng = Math.round(feeling.lng * 2) / 2;
+    // Round to 0.1 degree precision for grouping very nearby feelings only
+    const keyLat = Math.round(feeling.lat * 10) / 10;
+    const keyLng = Math.round(feeling.lng * 10) / 10;
     const key = `${keyLat},${keyLng}`;
     
     if (!groups.has(key)) {
@@ -404,11 +404,16 @@ export function GlobeMap() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [isAdjustingLocation, setIsAdjustingLocation] = useState(false);
   const [shareFeeling, setShareFeeling] = useState("");
   const [shareMessage, setShareMessage] = useState("");
   const [feelings, setFeelings] = useState(SAMPLE_FEELINGS); // 30 static + user submissions
   const [currentFeelingIndex, setCurrentFeelingIndex] = useState(0);
   const [notification, setNotification] = useState<{ type: 'success' | 'error' | 'warning'; message: string } | null>(null);
+  const [showMyFeelings, setShowMyFeelings] = useState(false);
+  const [myFeelings, setMyFeelings] = useState<any[]>([]);
+  const [editingFeeling, setEditingFeeling] = useState<any | null>(null);
+  const [isEditingPosition, setIsEditingPosition] = useState(false);
 
   // Show notification helper
   const showNotification = useCallback((type: 'success' | 'error' | 'warning', message: string) => {
@@ -417,6 +422,55 @@ export function GlobeMap() {
   }, []);
   const rotationRef = useRef<number | null>(null);
   const isUserInteracting = useRef(false);
+
+  // Load user's own feelings
+  const loadMyFeelings = useCallback(async () => {
+    const token = localStorage.getItem('worldfelt_token');
+    if (!token) return;
+    
+    try {
+      const response = await fetch('/api/feelings/mine', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setMyFeelings(data);
+      }
+    } catch (error) {
+      console.error('Error loading my feelings:', error);
+    }
+  }, []);
+
+  // Update feeling position
+  const updateFeelingPosition = useCallback(async (id: number, lat: number, lng: number) => {
+    const token = localStorage.getItem('worldfelt_token');
+    if (!token) return;
+    
+    try {
+      const response = await fetch('/api/feelings/mine', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id, latitude: lat, longitude: lng }),
+      });
+      
+      if (response.ok) {
+        showNotification('success', 'Position updated!');
+        loadMyFeelings();
+        // Also update in the main feelings array
+        setFeelings(prev => prev.map(f => 
+          f.id === id ? { ...f, lat, lng } : f
+        ));
+      } else {
+        showNotification('error', 'Failed to update position');
+      }
+    } catch (error) {
+      console.error('Error updating position:', error);
+      showNotification('error', 'Failed to update position');
+    }
+  }, [showNotification, loadMyFeelings]);
 
   // Navigate to previous feeling
   const goToPrevFeeling = () => {
@@ -529,7 +583,7 @@ export function GlobeMap() {
     });
   }, []);
 
-  // Get user location - silently without browser popup
+  // Get user location - with high accuracy GPS
   const getUserLocation = useCallback(() => {
     setIsGettingLocation(true);
     
@@ -539,10 +593,11 @@ export function GlobeMap() {
       return;
     }
 
-    // Try to get cached location first (no permission popup)
+    // First try with high accuracy (GPS)
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const { latitude, longitude } = position.coords;
+        const { latitude, longitude, accuracy } = position.coords;
+        console.log(`Location found: ${latitude}, ${longitude} (accuracy: ${accuracy}m)`);
         setUserLocation({ lat: latitude, lng: longitude });
         setIsGettingLocation(false);
         setShowShareModal(true);
@@ -556,23 +611,30 @@ export function GlobeMap() {
         });
       },
       (error) => {
-        console.error("Error getting location:", error);
-        // Fallback: use map center as location
-        const center = map.current?.getCenter();
-        if (center) {
-          setUserLocation({ lat: center.lat, lng: center.lng });
-          setIsGettingLocation(false);
-          setShowShareModal(true);
-          showNotification('warning', "Using map center as your location. Drag the map to adjust.");
-        } else {
-          // Default to a generic location
-          setUserLocation({ lat: 0, lng: 0 });
-          setIsGettingLocation(false);
-          setShowShareModal(true);
-          showNotification('warning', "Couldn't detect location. Drag the map to your position.");
-        }
+        console.error("High accuracy failed, trying low accuracy:", error);
+        // Retry with lower accuracy if high accuracy fails
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setUserLocation({ lat: latitude, lng: longitude });
+            setIsGettingLocation(false);
+            setShowShareModal(true);
+            map.current?.flyTo({
+              center: [longitude, latitude],
+              zoom: 5,
+              pitch: 45,
+              duration: 2000,
+            });
+          },
+          (finalError) => {
+            console.error("All location attempts failed:", finalError);
+            setIsGettingLocation(false);
+            showNotification('error', "Please enable location access in your browser settings to share your feeling.");
+          },
+          { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
+        );
       },
-      { enableHighAccuracy: false, timeout: 5000, maximumAge: 300000 } // 5 min cache, quick timeout
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 } // GPS accuracy, fresh location
     );
   }, [showNotification]);
 
@@ -1063,6 +1125,22 @@ export function GlobeMap() {
           )}
         </motion.button>
 
+        {/* My Feelings Button */}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => {
+            loadMyFeelings();
+            setShowMyFeelings(true);
+          }}
+          className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl flex items-center justify-center transition-all bg-zinc-900/90 border border-white/[0.08] hover:bg-zinc-800/90 backdrop-blur-xl text-white/70 hover:text-white"
+          title="My feelings"
+        >
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+        </motion.button>
+
         {/* Rotation Toggle */}
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -1167,6 +1245,39 @@ export function GlobeMap() {
         </motion.button>
       </motion.div>
 
+      {/* Location Marker - shown when share modal is open */}
+      <AnimatePresence>
+        {showShareModal && userLocation && map.current && (
+          <motion.div
+            key="location-marker"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0 }}
+            className="fixed z-40 pointer-events-none"
+            style={{
+              left: map.current.project([userLocation.lng, userLocation.lat]).x,
+              top: map.current.project([userLocation.lng, userLocation.lat]).y,
+              transform: 'translate(-50%, -100%)',
+            }}
+          >
+            <div className="flex flex-col items-center">
+              {/* Pin */}
+              <motion.div 
+                className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-cyan-500 border-4 border-white shadow-lg flex items-center justify-center"
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <div className="w-2 h-2 bg-white rounded-full" />
+              </motion.div>
+              {/* Pin tip */}
+              <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[12px] border-t-cyan-500 -mt-1" />
+              {/* Shadow */}
+              <div className="w-4 h-1 bg-black/30 rounded-full mt-1 blur-sm" />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Share Feeling Modal */}
       <AnimatePresence>
         {showShareModal && userLocation && (
@@ -1174,8 +1285,30 @@ export function GlobeMap() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
-            onClick={() => setShowShareModal(false)}
+            className={`fixed inset-0 z-50 flex items-center justify-center ${isAdjustingLocation ? 'bg-black/30' : 'bg-black/60'} backdrop-blur-sm`}
+            onClick={(e) => {
+              if (isAdjustingLocation && map.current) {
+                // Get click position on map
+                const rect = mapContainer.current?.getBoundingClientRect();
+                if (rect) {
+                  const x = e.clientX - rect.left;
+                  const y = e.clientY - rect.top;
+                  const lngLat = map.current.unproject([x, y]);
+                  setUserLocation({ lat: lngLat.lat, lng: lngLat.lng });
+                  showNotification('success', 'Location updated!');
+                  
+                  // Fly to new location
+                  map.current.flyTo({
+                    center: [lngLat.lng, lngLat.lat],
+                    zoom: 5,
+                    duration: 1000,
+                  });
+                }
+              } else {
+                setShowShareModal(false);
+                setIsAdjustingLocation(false);
+              }
+            }}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -1198,19 +1331,45 @@ export function GlobeMap() {
               </div>
 
               {/* Location indicator */}
-              <div className="flex items-center gap-3 mb-6 p-3 md:p-4 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+              <div className="flex items-center gap-3 mb-4 p-3 md:p-4 rounded-xl bg-white/[0.03] border border-white/[0.05]">
                 <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-cyan-400/20 flex items-center justify-center">
                   <svg className="w-5 h-5 md:w-6 md:h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   </svg>
                 </div>
-                <div>
-                  <p className="text-xs md:text-sm text-white/40 font-[family-name:var(--font-smooch-sans)]">Your location</p>
+                <div className="flex-1">
+                  <p className="text-xs md:text-sm text-white/40 font-[family-name:var(--font-smooch-sans)]">
+                    {isAdjustingLocation ? 'Click on the map to set your location' : 'Your location'}
+                  </p>
                   <p className="text-sm md:text-base text-white/70 font-[family-name:var(--font-smooch-sans)]">
                     {userLocation.lat.toFixed(4)}°, {userLocation.lng.toFixed(4)}°
                   </p>
                 </div>
+                <button
+                  onClick={() => setIsAdjustingLocation(!isAdjustingLocation)}
+                  className={`px-3 py-1.5 rounded-lg text-xs md:text-sm font-[family-name:var(--font-smooch-sans)] transition-all ${
+                    isAdjustingLocation 
+                      ? 'bg-cyan-500 text-white' 
+                      : 'bg-white/[0.05] text-white/60 hover:bg-white/[0.1]'
+                  }`}
+                >
+                  {isAdjustingLocation ? 'Done' : 'Adjust'}
+                </button>
               </div>
+              
+              {/* Adjust location hint */}
+              {isAdjustingLocation && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mb-4 p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20"
+                >
+                  <p className="text-xs md:text-sm text-cyan-400 font-[family-name:var(--font-smooch-sans)] text-center">
+                    📍 Click anywhere on the map behind this modal to set your exact location
+                  </p>
+                </motion.div>
+              )}
 
               {/* Feeling selector */}
               <div className="mb-6">
@@ -1258,6 +1417,206 @@ export function GlobeMap() {
               </motion.button>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* My Feelings Modal */}
+      <AnimatePresence>
+        {showMyFeelings && !isEditingPosition && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+            onClick={() => {
+              setShowMyFeelings(false);
+              setEditingFeeling(null);
+              setIsEditingPosition(false);
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-zinc-900/95 border border-white/[0.08] rounded-2xl p-6 md:p-8 w-full max-w-md mx-4 backdrop-blur-xl max-h-[80vh] overflow-hidden flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="font-[family-name:var(--font-exo-2)] text-xl md:text-2xl text-white flex items-center gap-2">
+                  <span>❤️</span> My Feelings
+                </h3>
+                <button 
+                  onClick={() => {
+                    setShowMyFeelings(false);
+                    setEditingFeeling(null);
+                    setIsEditingPosition(false);
+                  }}
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/[0.08] transition-all text-lg md:text-xl"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Edit position hint */}
+              {isEditingPosition && editingFeeling && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="mb-4 p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20"
+                >
+                  <p className="text-xs md:text-sm text-cyan-400 font-[family-name:var(--font-smooch-sans)] text-center">
+                    📍 Click anywhere on the map to set new position for "{editingFeeling.feeling}"
+                  </p>
+                </motion.div>
+              )}
+
+              {/* Feelings list */}
+              <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+                {myFeelings.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-white/40 font-[family-name:var(--font-smooch-sans)] text-lg">
+                      You haven't shared any feelings yet
+                    </p>
+                    <p className="text-white/30 font-[family-name:var(--font-smooch-sans)] text-sm mt-2">
+                      Drop a pin to share how you feel!
+                    </p>
+                  </div>
+                ) : (
+                  myFeelings.map((feeling) => {
+                    const feelingOption = FEELING_OPTIONS.find(f => f.feeling === feeling.feeling);
+                    return (
+                      <motion.div
+                        key={feeling.id}
+                        className={`p-4 rounded-xl border transition-all ${
+                          editingFeeling?.id === feeling.id 
+                            ? 'bg-cyan-500/10 border-cyan-500/30' 
+                            : 'bg-white/[0.03] border-white/[0.05] hover:border-white/[0.1]'
+                        }`}
+                        whileHover={{ scale: 1.01 }}
+                      >
+                        <div className="flex items-start gap-3">
+                          {/* Emoji */}
+                          <div 
+                            className="w-10 h-10 rounded-full flex items-center justify-center text-xl"
+                            style={{ background: (feelingOption?.color || '#22d3ee') + '20' }}
+                          >
+                            {feelingOption?.emoji || '✨'}
+                          </div>
+                          
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm md:text-base font-[family-name:var(--font-smooch-sans)] text-white/90">
+                              "{feeling.comment || 'No message'}"
+                            </p>
+                            <p className="text-xs text-white/40 font-[family-name:var(--font-smooch-sans)] mt-1">
+                              feeling <span style={{ color: feelingOption?.color }}>{feeling.feeling}</span>
+                            </p>
+                            <p className="text-[10px] text-white/30 font-[family-name:var(--font-smooch-sans)] mt-1">
+                              📍 {feeling.latitude.toFixed(4)}°, {feeling.longitude.toFixed(4)}°
+                            </p>
+                          </div>
+                          
+                          {/* Actions */}
+                          <div className="flex flex-col gap-2">
+                            <button
+                              onClick={() => {
+                                if (map.current) {
+                                  map.current.flyTo({
+                                    center: [feeling.longitude, feeling.latitude],
+                                    zoom: 5,
+                                    duration: 1500,
+                                  });
+                                }
+                              }}
+                              className="px-2 py-1 rounded-lg text-xs bg-white/[0.05] text-white/60 hover:bg-white/[0.1] hover:text-white transition-all"
+                              title="View on map"
+                            >
+                              👁️
+                            </button>
+                            <button
+                              onClick={() => {
+                                setEditingFeeling(feeling);
+                                setIsEditingPosition(true);
+                              }}
+                              className={`px-2 py-1 rounded-lg text-xs transition-all ${
+                                editingFeeling?.id === feeling.id 
+                                  ? 'bg-cyan-500 text-white' 
+                                  : 'bg-white/[0.05] text-white/60 hover:bg-white/[0.1] hover:text-white'
+                              }`}
+                              title="Edit position"
+                            >
+                              ✏️
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Edit Position Mode - Floating Indicator */}
+      <AnimatePresence>
+        {isEditingPosition && editingFeeling && (
+          <>
+            {/* Clickable overlay to pick new position */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-40 cursor-crosshair"
+              onClick={(e) => {
+                if (map.current && mapContainer.current) {
+                  const rect = mapContainer.current.getBoundingClientRect();
+                  const x = e.clientX - rect.left;
+                  const y = e.clientY - rect.top;
+                  const lngLat = map.current.unproject([x, y]);
+                  updateFeelingPosition(editingFeeling.id, lngLat.lat, lngLat.lng);
+                  setIsEditingPosition(false);
+                  setEditingFeeling(null);
+                  setShowMyFeelings(true);
+                }
+              }}
+            />
+            
+            {/* Floating indicator */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="fixed top-4 left-1/2 -translate-x-1/2 z-50"
+            >
+              <div className="bg-zinc-900/95 border border-cyan-500/30 rounded-2xl px-6 py-4 backdrop-blur-xl shadow-lg shadow-cyan-500/10">
+                <div className="flex items-center gap-4">
+                  <div className="text-2xl">📍</div>
+                  <div>
+                    <p className="text-sm md:text-base text-white font-[family-name:var(--font-smooch-sans)]">
+                      Click anywhere on the map to set new position
+                    </p>
+                    <p className="text-xs text-cyan-400 font-[family-name:var(--font-smooch-sans)]">
+                      Editing: "{editingFeeling.feeling}" feeling
+                    </p>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsEditingPosition(false);
+                      setEditingFeeling(null);
+                      setShowMyFeelings(true);
+                    }}
+                    className="ml-4 px-3 py-1.5 rounded-lg bg-white/[0.08] text-white/60 hover:bg-white/[0.15] hover:text-white text-xs transition-all"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
 
