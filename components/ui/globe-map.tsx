@@ -17,27 +17,28 @@ const FEELING_OPTIONS = [
 ];
 
 // Sample feelings data for the globe - using precise coordinates (20 static feelings)
+// Using negative IDs to avoid conflict with database IDs
 const SAMPLE_FEELINGS = [
-  { id: 1, lng: -122.4194, lat: 37.7749, feeling: "hopeful", user: "someone in San Francisco", color: "#22d3ee", time: "2m ago", message: "the fog cleared today" },
-  { id: 2, lng: 2.3522, lat: 48.8566, feeling: "peaceful", user: "someone in Paris", color: "#a78bfa", time: "5m ago", message: "coffee by the seine" },
-  { id: 3, lng: 139.6917, lat: 35.6895, feeling: "grateful", user: "someone in Tokyo", color: "#34d399", time: "8m ago", message: "cherry blossoms are early" },
-  { id: 4, lng: -43.1729, lat: -22.9068, feeling: "tender", user: "someone in Rio", color: "#fb7185", time: "12m ago", message: "missing home" },
-  { id: 5, lng: 151.2093, lat: -33.8688, feeling: "calm", user: "someone in Sydney", color: "#38bdf8", time: "15m ago", message: "ocean sounds" },
-  { id: 6, lng: 77.2090, lat: 28.6139, feeling: "reflective", user: "someone in Delhi", color: "#fbbf24", time: "18m ago", message: "monsoon thoughts" },
-  { id: 7, lng: -0.1276, lat: 51.5074, feeling: "grateful", user: "someone in London", color: "#34d399", time: "22m ago", message: "tea and rain" },
-  { id: 8, lng: 31.2357, lat: 30.0444, feeling: "peaceful", user: "someone in Cairo", color: "#a78bfa", time: "25m ago", message: "sunset over the nile" },
-  { id: 9, lng: -74.0060, lat: 40.7128, feeling: "anxious", user: "someone in New York", color: "#f472b6", time: "28m ago", message: "deadline tomorrow" },
-  { id: 10, lng: 116.4074, lat: 39.9042, feeling: "tired", user: "someone in Beijing", color: "#94a3b8", time: "32m ago", message: "long day, longer night" },
-  { id: 11, lng: -99.1332, lat: 19.4326, feeling: "hopeful", user: "someone in Mexico City", color: "#22d3ee", time: "35m ago", message: "new beginnings" },
-  { id: 12, lng: 37.6173, lat: 55.7558, feeling: "calm", user: "someone in Moscow", color: "#38bdf8", time: "40m ago", message: "snow falling softly" },
-  { id: 13, lng: 18.4241, lat: -33.9249, feeling: "hopeful", user: "someone in Cape Town", color: "#22d3ee", time: "45m ago", message: "table mountain sunrise" },
-  { id: 14, lng: 144.9631, lat: -37.8136, feeling: "grateful", user: "someone in Melbourne", color: "#34d399", time: "48m ago", message: "coffee culture vibes" },
-  { id: 15, lng: -123.1207, lat: 49.2827, feeling: "peaceful", user: "someone in Vancouver", color: "#a78bfa", time: "52m ago", message: "mountains meet ocean" },
-  { id: 16, lng: 103.8198, lat: 1.3521, feeling: "reflective", user: "someone in Singapore", color: "#fbbf24", time: "55m ago", message: "city lights at night" },
-  { id: 17, lng: 12.4964, lat: 41.9028, feeling: "tender", user: "someone in Rome", color: "#fb7185", time: "1h ago", message: "ancient stories everywhere" },
-  { id: 18, lng: -3.7038, lat: 40.4168, feeling: "calm", user: "someone in Madrid", color: "#38bdf8", time: "1h ago", message: "siesta peace" },
-  { id: 19, lng: 13.4050, lat: 52.5200, feeling: "anxious", user: "someone in Berlin", color: "#f472b6", time: "1h ago", message: "creative chaos" },
-  { id: 20, lng: -79.3832, lat: 43.6532, feeling: "hopeful", user: "someone in Toronto", color: "#22d3ee", time: "1h ago", message: "diverse and vibrant" },
+  { id: -1, lng: -122.4194, lat: 37.7749, feeling: "hopeful", user: "someone in San Francisco", color: "#22d3ee", time: "2m ago", message: "the fog cleared today" },
+  { id: -2, lng: 2.3522, lat: 48.8566, feeling: "peaceful", user: "someone in Paris", color: "#a78bfa", time: "5m ago", message: "coffee by the seine" },
+  { id: -3, lng: 139.6917, lat: 35.6895, feeling: "grateful", user: "someone in Tokyo", color: "#34d399", time: "8m ago", message: "cherry blossoms are early" },
+  { id: -4, lng: -43.1729, lat: -22.9068, feeling: "tender", user: "someone in Rio", color: "#fb7185", time: "12m ago", message: "missing home" },
+  { id: -5, lng: 151.2093, lat: -33.8688, feeling: "calm", user: "someone in Sydney", color: "#38bdf8", time: "15m ago", message: "ocean sounds" },
+  { id: -6, lng: 77.2090, lat: 28.6139, feeling: "reflective", user: "someone in Delhi", color: "#fbbf24", time: "18m ago", message: "monsoon thoughts" },
+  { id: -7, lng: -0.1276, lat: 51.5074, feeling: "grateful", user: "someone in London", color: "#34d399", time: "22m ago", message: "tea and rain" },
+  { id: -8, lng: 31.2357, lat: 30.0444, feeling: "peaceful", user: "someone in Cairo", color: "#a78bfa", time: "25m ago", message: "sunset over the nile" },
+  { id: -9, lng: -74.0060, lat: 40.7128, feeling: "anxious", user: "someone in New York", color: "#f472b6", time: "28m ago", message: "deadline tomorrow" },
+  { id: -10, lng: 116.4074, lat: 39.9042, feeling: "tired", user: "someone in Beijing", color: "#94a3b8", time: "32m ago", message: "long day, longer night" },
+  { id: -11, lng: -99.1332, lat: 19.4326, feeling: "hopeful", user: "someone in Mexico City", color: "#22d3ee", time: "35m ago", message: "new beginnings" },
+  { id: -12, lng: 37.6173, lat: 55.7558, feeling: "calm", user: "someone in Moscow", color: "#38bdf8", time: "40m ago", message: "snow falling softly" },
+  { id: -13, lng: 18.4241, lat: -33.9249, feeling: "hopeful", user: "someone in Cape Town", color: "#22d3ee", time: "45m ago", message: "table mountain sunrise" },
+  { id: -14, lng: 144.9631, lat: -37.8136, feeling: "grateful", user: "someone in Melbourne", color: "#34d399", time: "48m ago", message: "coffee culture vibes" },
+  { id: -15, lng: -123.1207, lat: 49.2827, feeling: "peaceful", user: "someone in Vancouver", color: "#a78bfa", time: "52m ago", message: "mountains meet ocean" },
+  { id: -16, lng: 103.8198, lat: 1.3521, feeling: "reflective", user: "someone in Singapore", color: "#fbbf24", time: "55m ago", message: "city lights at night" },
+  { id: -17, lng: 12.4964, lat: 41.9028, feeling: "tender", user: "someone in Rome", color: "#fb7185", time: "1h ago", message: "ancient stories everywhere" },
+  { id: -18, lng: -3.7038, lat: 40.4168, feeling: "calm", user: "someone in Madrid", color: "#38bdf8", time: "1h ago", message: "siesta peace" },
+  { id: -19, lng: 13.4050, lat: 52.5200, feeling: "anxious", user: "someone in Berlin", color: "#f472b6", time: "1h ago", message: "creative chaos" },
+  { id: -20, lng: -79.3832, lat: 43.6532, feeling: "hopeful", user: "someone in Toronto", color: "#22d3ee", time: "1h ago", message: "diverse and vibrant" },
 ];
 
 // Group feelings by approximate location (within 0.5 degrees)
