@@ -96,7 +96,7 @@ function GalaxyCluster({
         }}
         onClick={() => onClick(feeling)}
       >
-        <div className={`relative max-w-[180px] px-3 py-2 rounded-xl bg-zinc-900/90 border border-white/[0.08] backdrop-blur-sm transition-all ${isFar ? 'hover:opacity-100' : ''}`}>
+        <div className={`relative max-w-[220px] md:max-w-[280px] px-3 md:px-4 py-2 md:py-3 rounded-xl bg-zinc-900/90 border border-white/[0.08] backdrop-blur-sm transition-all ${isFar ? 'hover:opacity-100' : ''}`}>
           {/* Arrow pointing to dot */}
           <div 
             className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 w-0 h-0 
@@ -106,17 +106,17 @@ function GalaxyCluster({
           />
           
           {/* Feeling label */}
-          <p className="text-[10px] font-[family-name:var(--font-smooch-sans)] mb-0.5 text-white/40">
+          <p className="text-[11px] md:text-sm font-[family-name:var(--font-smooch-sans)] mb-0.5 text-white/40">
             feeling <span style={{ color: feeling.color }} className="font-medium">{feeling.feeling}</span>
           </p>
           
           {/* Message */}
-          <p className="text-xs font-[family-name:var(--font-smooch-sans)] leading-tight text-white/70">
+          <p className="text-sm md:text-base font-[family-name:var(--font-smooch-sans)] leading-tight text-white/70">
             "{feeling.message}"
           </p>
           
           {/* Time */}
-          <p className="text-[9px] font-[family-name:var(--font-smooch-sans)] mt-1 text-white/30">
+          <p className="text-[10px] md:text-xs font-[family-name:var(--font-smooch-sans)] mt-1 text-white/30">
             {feeling.time}
           </p>
           
@@ -301,14 +301,14 @@ function GalaxyCluster({
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         className="absolute left-full top-1/2 -translate-y-1/2 ml-4 z-30 pointer-events-auto cursor-pointer"
-        style={{ minWidth: 200, maxWidth: 220 }}
+        style={{ minWidth: 220, maxWidth: 280 }}
         onClick={() => {
           const nextIndex = ((selectedDot ?? 0) + 1) % feelingsAtLocation.length;
           setSelectedDot(nextIndex);
         }}
       >
         <div 
-          className="relative px-3 py-2 rounded-xl bg-zinc-900/95 border-2 backdrop-blur-md shadow-xl transition-all hover:bg-zinc-800/95"
+          className="relative px-3 md:px-4 py-2 md:py-3 rounded-xl bg-zinc-900/95 border-2 backdrop-blur-md shadow-xl transition-all hover:bg-zinc-800/95"
           style={{ borderColor: selectedFeeling.color + '40' }}
         >
           {/* Arrow pointing to cluster - colored */}
@@ -323,15 +323,15 @@ function GalaxyCluster({
           {/* Navigation header */}
           <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/10">
             {/* Dot indicators */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               {feelingsAtLocation.map((f, i) => (
                 <motion.div 
                   key={f.id}
                   className="rounded-full cursor-pointer transition-all"
                   style={{ 
                     background: f.color,
-                    width: selectedDot === i ? 10 : 6,
-                    height: selectedDot === i ? 10 : 6,
+                    width: selectedDot === i ? 12 : 8,
+                    height: selectedDot === i ? 12 : 8,
                     opacity: selectedDot === i ? 1 : 0.4,
                     boxShadow: selectedDot === i ? `0 0 8px ${f.color}` : 'none',
                   }}
@@ -345,7 +345,7 @@ function GalaxyCluster({
             </div>
             
             {/* Counter */}
-            <span className="text-[10px] text-white/50 font-[family-name:var(--font-smooch-sans)]">
+            <span className="text-xs md:text-sm text-white/50 font-[family-name:var(--font-smooch-sans)]">
               {(selectedDot ?? 0) + 1} / {feelingsAtLocation.length}
             </span>
           </div>
@@ -353,32 +353,32 @@ function GalaxyCluster({
           {/* Current feeling label with colored indicator */}
           <div className="flex items-center gap-2 mb-1">
             <motion.div 
-              className="w-3 h-3 rounded-full"
+              className="w-3.5 h-3.5 md:w-4 md:h-4 rounded-full"
               style={{ background: selectedFeeling.color, boxShadow: `0 0 8px ${selectedFeeling.color}` }}
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 1.5, repeat: Infinity }}
             />
-            <p className="text-[11px] font-[family-name:var(--font-smooch-sans)] text-white/60">
+            <p className="text-xs md:text-sm font-[family-name:var(--font-smooch-sans)] text-white/60">
               feeling <span style={{ color: selectedFeeling.color }} className="font-semibold">{selectedFeeling.feeling}</span>
             </p>
           </div>
           
           {/* Message */}
-          <p className="text-sm font-[family-name:var(--font-smooch-sans)] leading-snug text-white/90 pl-5">
+          <p className="text-sm md:text-base font-[family-name:var(--font-smooch-sans)] leading-snug text-white/90 pl-5 md:pl-6">
             "{selectedFeeling.message}"
           </p>
           
           {/* Time */}
-          <p className="text-[9px] font-[family-name:var(--font-smooch-sans)] mt-1.5 text-white/30 pl-5">
+          <p className="text-[10px] md:text-xs font-[family-name:var(--font-smooch-sans)] mt-1.5 text-white/30 pl-5 md:pl-6">
             {selectedFeeling.time}
           </p>
           
           {/* Click hint */}
-          <div className="flex items-center justify-center gap-1 mt-2 pt-2 border-t border-white/10">
-            <svg className="w-3 h-3 text-cyan-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="flex items-center justify-center gap-1.5 mt-2 pt-2 border-t border-white/10">
+            <svg className="w-3.5 h-3.5 md:w-4 md:h-4 text-cyan-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
             </svg>
-            <span className="text-[9px] text-cyan-400/60 font-[family-name:var(--font-smooch-sans)]">
+            <span className="text-[10px] md:text-xs text-cyan-400/60 font-[family-name:var(--font-smooch-sans)]">
               click to see next feeling
             </span>
           </div>
@@ -466,10 +466,12 @@ export function GlobeMap() {
 
   // Load feelings from database and combine with static feelings
   useEffect(() => {
+    let isMounted = true;
+    
     const loadFeelings = async () => {
       try {
         const response = await fetch('/api/feelings');
-        if (response.ok) {
+        if (response.ok && isMounted) {
           const data = await response.json();
           // Transform API data to match our component format
           const dbFeelings = data.map((f: any) => ({
@@ -483,10 +485,23 @@ export function GlobeMap() {
             message: f.comment || "",
           }));
           
-          // Combine static feelings with database feelings (no duplicates)
-          const staticIds = new Set(SAMPLE_FEELINGS.map(f => f.id));
-          const uniqueDbFeelings = dbFeelings.filter((f: any) => !staticIds.has(f.id));
-          setFeelings([...SAMPLE_FEELINGS, ...uniqueDbFeelings]);
+          // Only update if there are new feelings from database
+          if (dbFeelings.length > 0) {
+            setFeelings(prev => {
+              // Check if we actually have new data by comparing IDs
+              const prevDbIds = new Set(prev.filter(f => f.id > 0).map(f => f.id));
+              const newDbIds = new Set(dbFeelings.map((f: any) => f.id));
+              
+              // If same IDs, don't update to prevent re-render
+              if (prevDbIds.size === newDbIds.size && 
+                  [...prevDbIds].every(id => newDbIds.has(id))) {
+                return prev;
+              }
+              
+              // Combine static feelings with database feelings
+              return [...SAMPLE_FEELINGS, ...dbFeelings];
+            });
+          }
         }
       } catch (error) {
         console.error('Error loading feelings:', error);
@@ -495,9 +510,12 @@ export function GlobeMap() {
     };
 
     loadFeelings();
-    // Refresh feelings every 30 seconds
-    const interval = setInterval(loadFeelings, 30000);
-    return () => clearInterval(interval);
+    // Refresh feelings every 60 seconds (reduced frequency)
+    const interval = setInterval(loadFeelings, 60000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   const handleFeelingClick = useCallback((feeling: typeof SAMPLE_FEELINGS[0]) => {
@@ -1163,32 +1181,32 @@ export function GlobeMap() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-zinc-900/95 border border-white/[0.08] rounded-2xl p-6 w-full max-w-md mx-4 backdrop-blur-xl"
+              className="bg-zinc-900/95 border border-white/[0.08] rounded-2xl p-6 md:p-8 w-full max-w-md mx-4 backdrop-blur-xl"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
-                <h3 className="font-[family-name:var(--font-exo-2)] text-xl text-white">
+                <h3 className="font-[family-name:var(--font-exo-2)] text-xl md:text-2xl text-white">
                   Share how you feel
                 </h3>
                 <button 
                   onClick={() => setShowShareModal(false)}
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/[0.08] transition-all"
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/[0.08] transition-all text-lg md:text-xl"
                 >
                   ✕
                 </button>
               </div>
 
               {/* Location indicator */}
-              <div className="flex items-center gap-2 mb-6 p-3 rounded-xl bg-white/[0.03] border border-white/[0.05]">
-                <div className="w-8 h-8 rounded-full bg-cyan-400/20 flex items-center justify-center">
-                  <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="flex items-center gap-3 mb-6 p-3 md:p-4 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-cyan-400/20 flex items-center justify-center">
+                  <svg className="w-5 h-5 md:w-6 md:h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-white/40 font-[family-name:var(--font-smooch-sans)]">Your location</p>
-                  <p className="text-sm text-white/70 font-[family-name:var(--font-smooch-sans)]">
+                  <p className="text-xs md:text-sm text-white/40 font-[family-name:var(--font-smooch-sans)]">Your location</p>
+                  <p className="text-sm md:text-base text-white/70 font-[family-name:var(--font-smooch-sans)]">
                     {userLocation.lat.toFixed(4)}°, {userLocation.lng.toFixed(4)}°
                   </p>
                 </div>
@@ -1196,20 +1214,20 @@ export function GlobeMap() {
 
               {/* Feeling selector */}
               <div className="mb-6">
-                <p className="text-sm text-white/50 font-[family-name:var(--font-smooch-sans)] mb-3">How are you feeling?</p>
-                <div className="grid grid-cols-4 gap-2">
+                <p className="text-sm md:text-base text-white/50 font-[family-name:var(--font-smooch-sans)] mb-3">How are you feeling?</p>
+                <div className="grid grid-cols-4 gap-2 md:gap-3">
                   {FEELING_OPTIONS.map((option) => (
                     <button
                       key={option.feeling}
                       onClick={() => setShareFeeling(option.feeling)}
-                      className={`p-3 rounded-xl border transition-all flex flex-col items-center gap-1 ${
+                      className={`p-3 md:p-4 rounded-xl border transition-all flex flex-col items-center gap-1.5 ${
                         shareFeeling === option.feeling
                           ? "border-cyan-400/50 bg-cyan-400/10"
                           : "border-white/[0.05] hover:border-white/[0.1] bg-white/[0.02]"
                       }`}
                     >
-                      <span className="text-xl">{option.emoji}</span>
-                      <span className="text-[10px] font-[family-name:var(--font-smooch-sans)] text-white/60">{option.feeling}</span>
+                      <span className="text-xl md:text-2xl">{option.emoji}</span>
+                      <span className="text-[10px] md:text-xs font-[family-name:var(--font-smooch-sans)] text-white/60">{option.feeling}</span>
                     </button>
                   ))}
                 </div>
@@ -1217,15 +1235,15 @@ export function GlobeMap() {
 
               {/* Message input */}
               <div className="mb-6">
-                <p className="text-sm text-white/50 font-[family-name:var(--font-smooch-sans)] mb-3">Say something (optional)</p>
+                <p className="text-sm md:text-base text-white/50 font-[family-name:var(--font-smooch-sans)] mb-3">Say something (optional)</p>
                 <textarea
                   value={shareMessage}
                   onChange={(e) => setShareMessage(e.target.value)}
                   placeholder="what's on your mind..."
                   maxLength={100}
-                  className="w-full h-24 p-4 rounded-xl bg-white/[0.03] border border-white/[0.05] text-white/80 placeholder:text-white/30 font-[family-name:var(--font-smooch-sans)] text-sm resize-none focus:outline-none focus:border-cyan-400/30 transition-all"
+                  className="w-full h-24 md:h-28 p-4 rounded-xl bg-white/[0.03] border border-white/[0.05] text-white/80 placeholder:text-white/30 font-[family-name:var(--font-smooch-sans)] text-sm md:text-base resize-none focus:outline-none focus:border-cyan-400/30 transition-all"
                 />
-                <p className="text-right text-xs text-white/30 mt-1">{shareMessage.length}/100</p>
+                <p className="text-right text-xs md:text-sm text-white/30 mt-1">{shareMessage.length}/100</p>
               </div>
 
               {/* Submit button */}
@@ -1234,7 +1252,7 @@ export function GlobeMap() {
                 whileTap={{ scale: 0.98 }}
                 onClick={handleShareFeeling}
                 disabled={!shareFeeling || !shareMessage}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-[family-name:var(--font-smooch-sans)] text-lg hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                className="w-full py-3 md:py-4 rounded-xl bg-cyan-500/90 hover:bg-cyan-500 text-white font-[family-name:var(--font-smooch-sans)] text-lg md:text-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all border border-cyan-400/30"
               >
                 Drop your feeling ✨
               </motion.button>
