@@ -16,7 +16,7 @@ const FEELING_OPTIONS = [
   { feeling: "tired", color: "#94a3b8", emoji: "🌙" },
 ];
 
-// Sample feelings data for the globe - using precise coordinates (30 static feelings)
+// Sample feelings data for the globe - using precise coordinates (20 static feelings)
 const SAMPLE_FEELINGS = [
   { id: 1, lng: -122.4194, lat: 37.7749, feeling: "hopeful", user: "someone in San Francisco", color: "#22d3ee", time: "2m ago", message: "the fog cleared today" },
   { id: 2, lng: 2.3522, lat: 48.8566, feeling: "peaceful", user: "someone in Paris", color: "#a78bfa", time: "5m ago", message: "coffee by the seine" },
@@ -38,16 +38,6 @@ const SAMPLE_FEELINGS = [
   { id: 18, lng: -3.7038, lat: 40.4168, feeling: "calm", user: "someone in Madrid", color: "#38bdf8", time: "1h ago", message: "siesta peace" },
   { id: 19, lng: 13.4050, lat: 52.5200, feeling: "anxious", user: "someone in Berlin", color: "#f472b6", time: "1h ago", message: "creative chaos" },
   { id: 20, lng: -79.3832, lat: 43.6532, feeling: "hopeful", user: "someone in Toronto", color: "#22d3ee", time: "1h ago", message: "diverse and vibrant" },
-  { id: 21, lng: 55.2708, lat: 25.2048, feeling: "reflective", user: "someone in Dubai", color: "#fbbf24", time: "2h ago", message: "desert at dusk" },
-  { id: 22, lng: 174.7633, lat: -36.8485, feeling: "grateful", user: "someone in Auckland", color: "#34d399", time: "2h ago", message: "island life balance" },
-  { id: 23, lng: 114.1095, lat: 22.3964, feeling: "tired", user: "someone in Shenzhen", color: "#94a3b8", time: "2h ago", message: "tech hustle never stops" },
-  { id: 24, lng: -58.3816, lat: -34.6037, feeling: "tender", user: "someone in Buenos Aires", color: "#fb7185", time: "3h ago", message: "tango in the streets" },
-  { id: 25, lng: 100.5018, lat: 13.7563, feeling: "peaceful", user: "someone in Bangkok", color: "#a78bfa", time: "3h ago", message: "temple bells ringing" },
-  { id: 26, lng: 126.9780, lat: 37.5665, feeling: "anxious", user: "someone in Seoul", color: "#f472b6", time: "3h ago", message: "fast-paced energy" },
-  { id: 27, lng: 28.9784, lat: 41.0082, feeling: "reflective", user: "someone in Istanbul", color: "#fbbf24", time: "4h ago", message: "bridge between worlds" },
-  { id: 28, lng: -46.6333, lat: -23.5505, feeling: "hopeful", user: "someone in São Paulo", color: "#22d3ee", time: "4h ago", message: "dreams in motion" },
-  { id: 29, lng: 72.8777, lat: 19.0760, feeling: "grateful", user: "someone in Mumbai", color: "#34d399", time: "4h ago", message: "city that never sleeps" },
-  { id: 30, lng: -118.2437, lat: 34.0522, feeling: "calm", user: "someone in Los Angeles", color: "#38bdf8", time: "5h ago", message: "sunset boulevard glow" },
 ];
 
 // Group feelings by approximate location (within 0.5 degrees)
@@ -415,8 +405,15 @@ export function GlobeMap() {
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [shareFeeling, setShareFeeling] = useState("");
   const [shareMessage, setShareMessage] = useState("");
-  const [feelings] = useState(SAMPLE_FEELINGS); // Static 30 feelings only
+  const [feelings, setFeelings] = useState(SAMPLE_FEELINGS); // 30 static + user submissions
   const [currentFeelingIndex, setCurrentFeelingIndex] = useState(0);
+  const [notification, setNotification] = useState<{ type: 'success' | 'error' | 'warning'; message: string } | null>(null);
+
+  // Show notification helper
+  const showNotification = useCallback((type: 'success' | 'error' | 'warning', message: string) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 4000);
+  }, []);
   const rotationRef = useRef<number | null>(null);
   const isUserInteracting = useRef(false);
 
@@ -454,8 +451,6 @@ export function GlobeMap() {
     }, 5000);
   };
 
-  // Using static 30 feelings only - no API loading needed
-
   // Helper function to get relative time
   const getTimeAgo = (date: Date) => {
     const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
@@ -468,6 +463,42 @@ export function GlobeMap() {
     return `${days}d ago`;
   };
 
+  // Load feelings from database and combine with static feelings
+  useEffect(() => {
+    const loadFeelings = async () => {
+      try {
+        const response = await fetch('/api/feelings');
+        if (response.ok) {
+          const data = await response.json();
+          // Transform API data to match our component format
+          const dbFeelings = data.map((f: any) => ({
+            id: f.id,
+            lng: f.longitude,
+            lat: f.latitude,
+            feeling: f.feeling,
+            user: "someone",
+            color: FEELING_OPTIONS.find(opt => opt.feeling === f.feeling)?.color || "#22d3ee",
+            time: getTimeAgo(new Date(f.createdAt)),
+            message: f.comment || "",
+          }));
+          
+          // Combine static feelings with database feelings (no duplicates)
+          const staticIds = new Set(SAMPLE_FEELINGS.map(f => f.id));
+          const uniqueDbFeelings = dbFeelings.filter((f: any) => !staticIds.has(f.id));
+          setFeelings([...SAMPLE_FEELINGS, ...uniqueDbFeelings]);
+        }
+      } catch (error) {
+        console.error('Error loading feelings:', error);
+        // Keep static feelings if API fails
+      }
+    };
+
+    loadFeelings();
+    // Refresh feelings every 30 seconds
+    const interval = setInterval(loadFeelings, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleFeelingClick = useCallback((feeling: typeof SAMPLE_FEELINGS[0]) => {
     setSelectedFeeling(feeling);
     map.current?.flyTo({
@@ -479,17 +510,17 @@ export function GlobeMap() {
     });
   }, []);
 
-  // Get user location
+  // Get user location - silently without browser popup
   const getUserLocation = useCallback(() => {
     setIsGettingLocation(true);
     
     if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser");
+      showNotification('error', "Geolocation is not supported by your browser");
       setIsGettingLocation(false);
       return;
     }
 
-    // Use lower accuracy first for faster response, then try high accuracy
+    // Try to get cached location first (no permission popup)
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
@@ -507,30 +538,24 @@ export function GlobeMap() {
       },
       (error) => {
         console.error("Error getting location:", error);
-        // Retry with lower accuracy if high accuracy fails
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            setUserLocation({ lat: latitude, lng: longitude });
-            setIsGettingLocation(false);
-            setShowShareModal(true);
-            map.current?.flyTo({
-              center: [longitude, latitude],
-              zoom: 5,
-              pitch: 45,
-              duration: 2000,
-            });
-          },
-          () => {
-            alert("Unable to get your location. Please enable location services.");
-            setIsGettingLocation(false);
-          },
-          { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
-        );
+        // Fallback: use map center as location
+        const center = map.current?.getCenter();
+        if (center) {
+          setUserLocation({ lat: center.lat, lng: center.lng });
+          setIsGettingLocation(false);
+          setShowShareModal(true);
+          showNotification('warning', "Using map center as your location. Drag the map to adjust.");
+        } else {
+          // Default to a generic location
+          setUserLocation({ lat: 0, lng: 0 });
+          setIsGettingLocation(false);
+          setShowShareModal(true);
+          showNotification('warning', "Couldn't detect location. Drag the map to your position.");
+        }
       },
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: 30000 }
+      { enableHighAccuracy: false, timeout: 5000, maximumAge: 300000 } // 5 min cache, quick timeout
     );
-  }, []);
+  }, [showNotification]);
 
   // Share feeling
   const handleShareFeeling = useCallback(async () => {
@@ -540,12 +565,12 @@ export function GlobeMap() {
       // Get auth token
       const token = localStorage.getItem('worldfelt_token');
       if (!token) {
-        alert('⚠️ Please login first to share your feelings');
+        showNotification('warning', 'Please login first to share your feelings');
         setShowShareModal(false);
         return;
       }
 
-      // Save to database only (won't appear on map - keeping 30 static feelings)
+      // Save to database and show on map
       const response = await fetch('/api/feelings', {
         method: 'POST',
         headers: {
@@ -565,33 +590,57 @@ export function GlobeMap() {
       if (!response.ok) {
         if (response.status === 401) {
           // Unauthorized - token expired or invalid
-          alert('🔐 Your session expired. Please login again.');
+          showNotification('error', 'Your session expired. Please login again.');
           localStorage.removeItem('worldfelt_token');
           localStorage.removeItem('worldfelt_username');
           localStorage.removeItem('worldfelt_auth');
-          window.location.href = '/globe';
+          setTimeout(() => { window.location.href = '/globe'; }, 1500);
           return;
         }
         if (response.status === 429) {
           // Rate limited - user already shared today
-          alert(`⏳ ${data.message || "You've already shared a feeling today. Come back tomorrow!"}`);
+          showNotification('warning', data.message || "You've already shared a feeling today. Come back tomorrow!");
           setShowShareModal(false);
           return;
         }
         throw new Error(data.error || 'Failed to save feeling');
       }
 
+      const savedFeeling = data;
+      const feelingOption = FEELING_OPTIONS.find(f => f.feeling === shareFeeling);
+      const newFeeling = {
+        id: savedFeeling.id,
+        lng: userLocation.lng,
+        lat: userLocation.lat,
+        feeling: shareFeeling,
+        user: "you",
+        color: feelingOption?.color || "#22d3ee",
+        time: "just now",
+        message: shareMessage,
+      };
+
+      // Add to feelings array so it shows on map
+      setFeelings(prev => [newFeeling, ...prev]);
+
       setShowShareModal(false);
       setShareFeeling("");
       setShareMessage("");
+      setSelectedFeeling(newFeeling);
       
-      // Show success message - feeling saved but won't appear on map
-      alert('✨ Your feeling has been saved! Thank you for sharing.');
+      // Fly to the new feeling
+      map.current?.flyTo({
+        center: [userLocation.lng, userLocation.lat],
+        zoom: 4,
+        pitch: 45,
+        duration: 1500,
+      });
+      
+      showNotification('success', 'Your feeling has been shared with the world!');
     } catch (error) {
       console.error('Error saving feeling:', error);
-      alert('Failed to share your feeling. Please try again.');
+      showNotification('error', 'Failed to share your feeling. Please try again.');
     }
-  }, [userLocation, shareFeeling, shareMessage]);
+  }, [userLocation, shareFeeling, shareMessage, showNotification]);
 
   // Toggle rotation
   const toggleRotation = useCallback(() => {
@@ -877,6 +926,41 @@ export function GlobeMap() {
 
   return (
     <>
+      {/* Custom Notification Popup */}
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            initial={{ opacity: 0, y: -50, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, y: -50, x: "-50%" }}
+            className="fixed top-6 left-1/2 z-[100] pointer-events-auto"
+          >
+            <div 
+              className={`px-5 py-3 rounded-xl backdrop-blur-xl border shadow-2xl flex items-center gap-3 ${
+                notification.type === 'success' 
+                  ? 'bg-emerald-500/20 border-emerald-500/30' 
+                  : notification.type === 'warning'
+                  ? 'bg-amber-500/20 border-amber-500/30'
+                  : 'bg-red-500/20 border-red-500/30'
+              }`}
+            >
+              <span className="text-lg">
+                {notification.type === 'success' ? '✨' : notification.type === 'warning' ? '⚠️' : '❌'}
+              </span>
+              <p className="text-sm font-[family-name:var(--font-smooch-sans)] text-white/90">
+                {notification.message}
+              </p>
+              <button 
+                onClick={() => setNotification(null)}
+                className="ml-2 text-white/40 hover:text-white/80 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Map container - full screen */}
       <div 
         ref={mapContainer} 
