@@ -10,6 +10,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  passcode  String
+  createdAt DateTime @default(now())
+  feelings  Feeling[]
+  
+  @@map("users")
+}
+
 model Feeling {
   id        Int      @id @default(autoincrement())
   latitude  Float
@@ -17,7 +27,10 @@ model Feeling {
   feeling   String
   comment   String?
   createdAt DateTime @default(now())
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
   
   @@index([createdAt])
+  @@index([userId])
   @@map("feelings")
 }

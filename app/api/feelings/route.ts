@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { extractTokenFromHeader, verifyToken } from '@/lib/auth';
 
 // GET /api/feelings - Get all feelings
 export async function GET() {
@@ -24,6 +25,52 @@ export async function GET() {
 // POST /api/feelings - Create a new feeling
 export async function POST(request: NextRequest) {
   try {
+    // Authenticate user
+    const authHeader = request.headers.get('authorization');
+    const token = extractTokenFromHeader(authHeader);
+    
+    if (!token) {
+      return NextResponse.json(
+        { error: 'Authentication required. Please login.' },
+        { status: 401 }
+      );
+    }
+
+    const payload = verifyToken(token);
+    if (!payload) {
+      return NextResponse.json(
+        { error: 'Invalid or expired token. Please login again.' },
+        { status: 401 }
+      );
+    }
+
+    // Check if user already shared today (1 feeling per day limit)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const existingTodayFeeling = await prisma.feeling.findFirst({
+      where: {
+        userId: payload.userId,
+        createdAt: {
+          gte: today,
+        },
+      },
+    });
+
+    if (existingTodayFeeling) {
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const hoursLeft = Math.ceil((tomorrow.getTime() - Date.now()) / (1000 * 60 * 60));
+      
+      return NextResponse.json(
+        { 
+          error: 'Daily limit reached',
+          message: `You've already shared a feeling today. Come back in ${hoursLeft} hours!`
+        },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { latitude, longitude, feeling, comment } = body;
 
@@ -50,13 +97,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create the feeling
+    // Create the feeling with userId
     const newFeeling = await prisma.feeling.create({
       data: {
         latitude: parseFloat(latitude),
         longitude: parseFloat(longitude),
         feeling,
         comment: comment || null,
+        userId: payload.userId,
       },
     });
 

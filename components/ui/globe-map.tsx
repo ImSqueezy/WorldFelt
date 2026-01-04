@@ -16,7 +16,7 @@ const FEELING_OPTIONS = [
   { feeling: "tired", color: "#94a3b8", emoji: "🌙" },
 ];
 
-// Sample feelings data for the globe - using precise coordinates
+// Sample feelings data for the globe - using precise coordinates (30 static feelings)
 const SAMPLE_FEELINGS = [
   { id: 1, lng: -122.4194, lat: 37.7749, feeling: "hopeful", user: "someone in San Francisco", color: "#22d3ee", time: "2m ago", message: "the fog cleared today" },
   { id: 2, lng: 2.3522, lat: 48.8566, feeling: "peaceful", user: "someone in Paris", color: "#a78bfa", time: "5m ago", message: "coffee by the seine" },
@@ -24,69 +24,381 @@ const SAMPLE_FEELINGS = [
   { id: 4, lng: -43.1729, lat: -22.9068, feeling: "tender", user: "someone in Rio", color: "#fb7185", time: "12m ago", message: "missing home" },
   { id: 5, lng: 151.2093, lat: -33.8688, feeling: "calm", user: "someone in Sydney", color: "#38bdf8", time: "15m ago", message: "ocean sounds" },
   { id: 6, lng: 77.2090, lat: 28.6139, feeling: "reflective", user: "someone in Delhi", color: "#fbbf24", time: "18m ago", message: "monsoon thoughts" },
-  { id: 7, lng: -0.1276, lat: 51.5074, feeling: "content", user: "someone in London", color: "#a3e635", time: "22m ago", message: "tea and rain" },
-  { id: 8, lng: 31.2357, lat: 30.0444, feeling: "still", user: "someone in Cairo", color: "#e879f9", time: "25m ago", message: "sunset over the nile" },
+  { id: 7, lng: -0.1276, lat: 51.5074, feeling: "grateful", user: "someone in London", color: "#34d399", time: "22m ago", message: "tea and rain" },
+  { id: 8, lng: 31.2357, lat: 30.0444, feeling: "peaceful", user: "someone in Cairo", color: "#a78bfa", time: "25m ago", message: "sunset over the nile" },
   { id: 9, lng: -74.0060, lat: 40.7128, feeling: "anxious", user: "someone in New York", color: "#f472b6", time: "28m ago", message: "deadline tomorrow" },
   { id: 10, lng: 116.4074, lat: 39.9042, feeling: "tired", user: "someone in Beijing", color: "#94a3b8", time: "32m ago", message: "long day, longer night" },
   { id: 11, lng: -99.1332, lat: 19.4326, feeling: "hopeful", user: "someone in Mexico City", color: "#22d3ee", time: "35m ago", message: "new beginnings" },
   { id: 12, lng: 37.6173, lat: 55.7558, feeling: "calm", user: "someone in Moscow", color: "#38bdf8", time: "40m ago", message: "snow falling softly" },
+  { id: 13, lng: 18.4241, lat: -33.9249, feeling: "hopeful", user: "someone in Cape Town", color: "#22d3ee", time: "45m ago", message: "table mountain sunrise" },
+  { id: 14, lng: 144.9631, lat: -37.8136, feeling: "grateful", user: "someone in Melbourne", color: "#34d399", time: "48m ago", message: "coffee culture vibes" },
+  { id: 15, lng: -123.1207, lat: 49.2827, feeling: "peaceful", user: "someone in Vancouver", color: "#a78bfa", time: "52m ago", message: "mountains meet ocean" },
+  { id: 16, lng: 103.8198, lat: 1.3521, feeling: "reflective", user: "someone in Singapore", color: "#fbbf24", time: "55m ago", message: "city lights at night" },
+  { id: 17, lng: 12.4964, lat: 41.9028, feeling: "tender", user: "someone in Rome", color: "#fb7185", time: "1h ago", message: "ancient stories everywhere" },
+  { id: 18, lng: -3.7038, lat: 40.4168, feeling: "calm", user: "someone in Madrid", color: "#38bdf8", time: "1h ago", message: "siesta peace" },
+  { id: 19, lng: 13.4050, lat: 52.5200, feeling: "anxious", user: "someone in Berlin", color: "#f472b6", time: "1h ago", message: "creative chaos" },
+  { id: 20, lng: -79.3832, lat: 43.6532, feeling: "hopeful", user: "someone in Toronto", color: "#22d3ee", time: "1h ago", message: "diverse and vibrant" },
+  { id: 21, lng: 55.2708, lat: 25.2048, feeling: "reflective", user: "someone in Dubai", color: "#fbbf24", time: "2h ago", message: "desert at dusk" },
+  { id: 22, lng: 174.7633, lat: -36.8485, feeling: "grateful", user: "someone in Auckland", color: "#34d399", time: "2h ago", message: "island life balance" },
+  { id: 23, lng: 114.1095, lat: 22.3964, feeling: "tired", user: "someone in Shenzhen", color: "#94a3b8", time: "2h ago", message: "tech hustle never stops" },
+  { id: 24, lng: -58.3816, lat: -34.6037, feeling: "tender", user: "someone in Buenos Aires", color: "#fb7185", time: "3h ago", message: "tango in the streets" },
+  { id: 25, lng: 100.5018, lat: 13.7563, feeling: "peaceful", user: "someone in Bangkok", color: "#a78bfa", time: "3h ago", message: "temple bells ringing" },
+  { id: 26, lng: 126.9780, lat: 37.5665, feeling: "anxious", user: "someone in Seoul", color: "#f472b6", time: "3h ago", message: "fast-paced energy" },
+  { id: 27, lng: 28.9784, lat: 41.0082, feeling: "reflective", user: "someone in Istanbul", color: "#fbbf24", time: "4h ago", message: "bridge between worlds" },
+  { id: 28, lng: -46.6333, lat: -23.5505, feeling: "hopeful", user: "someone in São Paulo", color: "#22d3ee", time: "4h ago", message: "dreams in motion" },
+  { id: 29, lng: 72.8777, lat: 19.0760, feeling: "grateful", user: "someone in Mumbai", color: "#34d399", time: "4h ago", message: "city that never sleeps" },
+  { id: 30, lng: -118.2437, lat: 34.0522, feeling: "calm", user: "someone in Los Angeles", color: "#38bdf8", time: "5h ago", message: "sunset boulevard glow" },
 ];
 
-// Floating comment bubble component
-function FloatingComment({ 
-  feeling, 
+// Group feelings by approximate location (within 0.5 degrees)
+function groupFeelingsByLocation(feelings: typeof SAMPLE_FEELINGS) {
+  const groups: Map<string, typeof SAMPLE_FEELINGS> = new Map();
+  
+  feelings.forEach(feeling => {
+    // Round to 0.5 degree precision for grouping nearby feelings
+    const keyLat = Math.round(feeling.lat * 2) / 2;
+    const keyLng = Math.round(feeling.lng * 2) / 2;
+    const key = `${keyLat},${keyLng}`;
+    
+    if (!groups.has(key)) {
+      groups.set(key, []);
+    }
+    groups.get(key)!.push(feeling);
+  });
+  
+  return groups;
+}
+
+// Galaxy Cluster component - shows multiple feelings as orbiting dots with spinning animation
+function GalaxyCluster({ 
+  feelings: feelingsAtLocation, 
   position,
   opacity,
-  onClick 
+  onClick,
 }: { 
-  feeling: typeof SAMPLE_FEELINGS[0]; 
+  feelings: typeof SAMPLE_FEELINGS;
   position: { x: number; y: number } | null;
   opacity: number;
-  onClick: () => void;
+  onClick: (feeling: typeof SAMPLE_FEELINGS[0]) => void;
 }) {
-  if (!position) return null;
+  const [selectedDot, setSelectedDot] = useState<number | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
   
+  if (!position || feelingsAtLocation.length === 0) return null;
+  
+  const hasMultiple = feelingsAtLocation.length > 1;
   const isFar = opacity < 0.7;
+  const feeling = feelingsAtLocation[0]; // For single feeling display
+  
+  // For single feeling - show with comment
+  if (!hasMultiple) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8, y: 10 }}
+        animate={{ opacity: opacity, scale: isFar ? 0.85 : 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.8, y: 10 }}
+        className="absolute pointer-events-auto cursor-pointer z-10"
+        style={{ 
+          left: position.x + 15, 
+          top: position.y - 25,
+          filter: isFar ? 'blur(0.5px)' : 'none'
+        }}
+        onClick={() => onClick(feeling)}
+      >
+        <div className={`relative max-w-[180px] px-3 py-2 rounded-xl bg-zinc-900/90 border border-white/[0.08] backdrop-blur-sm transition-all ${isFar ? 'hover:opacity-100' : ''}`}>
+          {/* Arrow pointing to dot */}
+          <div 
+            className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 w-0 h-0 
+              border-t-[6px] border-t-transparent 
+              border-b-[6px] border-b-transparent 
+              border-r-[6px] border-r-zinc-900/90" 
+          />
+          
+          {/* Feeling label */}
+          <p className="text-[10px] font-[family-name:var(--font-smooch-sans)] mb-0.5 text-white/40">
+            feeling <span style={{ color: feeling.color }} className="font-medium">{feeling.feeling}</span>
+          </p>
+          
+          {/* Message */}
+          <p className="text-xs font-[family-name:var(--font-smooch-sans)] leading-tight text-white/70">
+            "{feeling.message}"
+          </p>
+          
+          {/* Time */}
+          <p className="text-[9px] font-[family-name:var(--font-smooch-sans)] mt-1 text-white/30">
+            {feeling.time}
+          </p>
+          
+          {/* Glow effect */}
+          <div 
+            className="absolute -inset-1 rounded-xl blur-md opacity-20 -z-10"
+            style={{ background: feeling.color }}
+          />
+        </div>
+      </motion.div>
+    );
+  }
+  
+  // For multiple feelings - show galaxy with spinning orbit
+  const orbitRadius = 30;
+  const clusterSize = 120;
+  const selectedFeeling = selectedDot !== null ? feelingsAtLocation[selectedDot] : feelingsAtLocation[0];
   
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.8, y: 10 }}
-      animate={{ opacity: opacity, scale: isFar ? 0.85 : 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.8, y: 10 }}
-      className="absolute pointer-events-auto cursor-pointer z-10"
+      initial={{ opacity: 0, scale: 0.5 }}
+      animate={{ opacity: opacity, scale: isFar ? 0.8 : 1 }}
+      exit={{ opacity: 0, scale: 0.5 }}
+      className="absolute pointer-events-auto z-10"
       style={{ 
-        left: position.x + 20, 
-        top: position.y - 30,
-        transform: 'translate(0, -50%)',
-        filter: isFar ? 'blur(0.5px)' : 'none'
+        left: position.x - clusterSize / 2, 
+        top: position.y - clusterSize / 2,
+        width: clusterSize,
+        height: clusterSize,
+        filter: isFar ? 'blur(0.3px)' : 'none'
       }}
-      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setSelectedDot(null);
+      }}
     >
-      <div className={`relative max-w-[180px] px-3 py-2 rounded-xl bg-zinc-900/90 border border-white/[0.08] backdrop-blur-sm transition-all ${isFar ? 'hover:opacity-100' : ''}`}>
-        {/* Arrow pointing to dot */}
+      {/* Galaxy background glow */}
+      <motion.div 
+        className="absolute rounded-full pointer-events-none"
+        style={{
+          left: '50%',
+          top: '50%',
+          width: orbitRadius * 2 + 30,
+          height: orbitRadius * 2 + 30,
+          transform: 'translate(-50%, -50%)',
+          background: `radial-gradient(circle, ${feelingsAtLocation.map(f => f.color + '30').join(', ')}, transparent 70%)`,
+          filter: 'blur(10px)',
+        }}
+        animate={{ 
+          scale: isHovered ? 1.3 : 1,
+          opacity: isHovered ? 0.6 : 0.3
+        }}
+      />
+      
+      {/* Orbit ring - the circle connecting the dots */}
+      <motion.div 
+        className="absolute rounded-full border-2 border-dashed pointer-events-none"
+        style={{
+          left: '50%',
+          top: '50%',
+          width: orbitRadius * 2,
+          height: orbitRadius * 2,
+          transform: 'translate(-50%, -50%)',
+          borderColor: 'rgba(255,255,255,0.15)',
+        }}
+      />
+      
+      {/* Spinning container for the dots */}
+      <motion.div
+        className="absolute"
+        style={{
+          left: '50%',
+          top: '50%',
+          width: 0,
+          height: 0,
+        }}
+        animate={{ rotate: 360 }}
+        transition={{
+          duration: 30,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+      >
+        {/* Feeling dots arranged in circle and spinning */}
+        {feelingsAtLocation.map((f, index) => {
+          const angle = (index / feelingsAtLocation.length) * Math.PI * 2 - Math.PI / 2;
+          const x = Math.cos(angle) * orbitRadius;
+          const y = Math.sin(angle) * orbitRadius;
+          const isSelected = selectedDot === index;
+          const dotSize = isSelected ? 14 : 10;
+          
+          return (
+            <motion.div
+              key={f.id}
+              className="absolute cursor-pointer"
+              style={{
+                left: x - dotSize / 2,
+                top: y - dotSize / 2,
+                width: dotSize,
+                height: dotSize,
+              }}
+              animate={{ 
+                scale: isSelected ? 1.4 : 1,
+                // Counter-rotate to keep dots upright
+                rotate: -360,
+              }}
+              transition={{
+                scale: { duration: 0.2 },
+                rotate: { duration: 30, repeat: Infinity, ease: "linear" }
+              }}
+              whileHover={{ scale: 1.5 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedDot(index);
+                onClick(f);
+              }}
+              onMouseEnter={() => setSelectedDot(index)}
+            >
+              {/* Dot glow */}
+              <div 
+                className="absolute inset-0 rounded-full blur-sm"
+                style={{ 
+                  background: f.color,
+                  opacity: isSelected ? 1 : 0.5,
+                }}
+              />
+              {/* Main dot */}
+              <div 
+                className="absolute inset-0 rounded-full border-2"
+                style={{ 
+                  background: `radial-gradient(circle at 30% 30%, ${f.color}, ${f.color}cc)`,
+                  borderColor: isSelected ? 'white' : 'rgba(255,255,255,0.3)',
+                  boxShadow: isSelected ? `0 0 12px ${f.color}` : `0 0 6px ${f.color}80`,
+                }}
+              />
+            </motion.div>
+          );
+        })}
+      </motion.div>
+      
+      {/* Center count badge */}
+      <motion.div
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-zinc-900/95 border border-white/20 flex items-center justify-center z-20 cursor-pointer"
+        whileHover={{ scale: 1.1 }}
+        onClick={() => {
+          const nextIndex = (selectedDot !== null ? selectedDot + 1 : 1) % feelingsAtLocation.length;
+          setSelectedDot(nextIndex);
+        }}
+      >
+        <span className="text-[10px] font-bold text-white">{feelingsAtLocation.length}</span>
+      </motion.div>
+      
+      {/* Connecting line from cluster to tooltip */}
+      <motion.div
+        className="absolute pointer-events-none z-25"
+        style={{
+          left: '50%',
+          top: '50%',
+          width: 50,
+          height: 2,
+          transformOrigin: 'left center',
+        }}
+      >
         <div 
-          className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 w-0 h-0 
-            border-t-[6px] border-t-transparent 
-            border-b-[6px] border-b-transparent 
-            border-r-[6px] border-r-zinc-900/90" 
+          className="w-full h-full"
+          style={{
+            background: `linear-gradient(to right, ${selectedFeeling.color}60, ${selectedFeeling.color}20)`,
+          }}
         />
-        
-        {/* Feeling label */}
-        <p className="text-[10px] font-[family-name:var(--font-smooch-sans)] mb-0.5 text-white/40">
-          feeling <span style={{ color: feeling.color }} className="font-medium">{feeling.feeling}</span>
-        </p>
-        
-        {/* Message */}
-        <p className="text-xs font-[family-name:var(--font-smooch-sans)] leading-tight text-white/70">
-          "{feeling.message}"
-        </p>
-        
-        {/* Glow effect */}
+        {/* Animated pulse along the line */}
+        <motion.div
+          className="absolute top-0 left-0 w-2 h-full rounded-full"
+          style={{ background: selectedFeeling.color }}
+          animate={{ x: [0, 48, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </motion.div>
+      
+      {/* Always visible comment tooltip - now clickable */}
+      <motion.div
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="absolute left-full top-1/2 -translate-y-1/2 ml-4 z-30 pointer-events-auto cursor-pointer"
+        style={{ minWidth: 200, maxWidth: 220 }}
+        onClick={() => {
+          const nextIndex = ((selectedDot ?? 0) + 1) % feelingsAtLocation.length;
+          setSelectedDot(nextIndex);
+        }}
+      >
         <div 
-          className="absolute -inset-1 rounded-xl blur-md opacity-20 -z-10"
-          style={{ background: feeling.color }}
-        />
-      </div>
+          className="relative px-3 py-2 rounded-xl bg-zinc-900/95 border-2 backdrop-blur-md shadow-xl transition-all hover:bg-zinc-800/95"
+          style={{ borderColor: selectedFeeling.color + '40' }}
+        >
+          {/* Arrow pointing to cluster - colored */}
+          <div 
+            className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 w-0 h-0 
+              border-t-[8px] border-t-transparent 
+              border-b-[8px] border-b-transparent 
+              border-r-[8px]"
+            style={{ borderRightColor: selectedFeeling.color + '60' }}
+          />
+          
+          {/* Navigation header */}
+          <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/10">
+            {/* Dot indicators */}
+            <div className="flex items-center gap-1">
+              {feelingsAtLocation.map((f, i) => (
+                <motion.div 
+                  key={f.id}
+                  className="rounded-full cursor-pointer transition-all"
+                  style={{ 
+                    background: f.color,
+                    width: selectedDot === i ? 10 : 6,
+                    height: selectedDot === i ? 10 : 6,
+                    opacity: selectedDot === i ? 1 : 0.4,
+                    boxShadow: selectedDot === i ? `0 0 8px ${f.color}` : 'none',
+                  }}
+                  whileHover={{ scale: 1.3 }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedDot(i);
+                  }}
+                />
+              ))}
+            </div>
+            
+            {/* Counter */}
+            <span className="text-[10px] text-white/50 font-[family-name:var(--font-smooch-sans)]">
+              {(selectedDot ?? 0) + 1} / {feelingsAtLocation.length}
+            </span>
+          </div>
+          
+          {/* Current feeling label with colored indicator */}
+          <div className="flex items-center gap-2 mb-1">
+            <motion.div 
+              className="w-3 h-3 rounded-full"
+              style={{ background: selectedFeeling.color, boxShadow: `0 0 8px ${selectedFeeling.color}` }}
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+            <p className="text-[11px] font-[family-name:var(--font-smooch-sans)] text-white/60">
+              feeling <span style={{ color: selectedFeeling.color }} className="font-semibold">{selectedFeeling.feeling}</span>
+            </p>
+          </div>
+          
+          {/* Message */}
+          <p className="text-sm font-[family-name:var(--font-smooch-sans)] leading-snug text-white/90 pl-5">
+            "{selectedFeeling.message}"
+          </p>
+          
+          {/* Time */}
+          <p className="text-[9px] font-[family-name:var(--font-smooch-sans)] mt-1.5 text-white/30 pl-5">
+            {selectedFeeling.time}
+          </p>
+          
+          {/* Click hint */}
+          <div className="flex items-center justify-center gap-1 mt-2 pt-2 border-t border-white/10">
+            <svg className="w-3 h-3 text-cyan-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+            </svg>
+            <span className="text-[9px] text-cyan-400/60 font-[family-name:var(--font-smooch-sans)]">
+              click to see next feeling
+            </span>
+          </div>
+          
+          {/* Glow effect */}
+          <div 
+            className="absolute -inset-1 rounded-xl blur-lg opacity-30 -z-10"
+            style={{ background: selectedFeeling.color }}
+          />
+        </div>
+      </motion.div>
     </motion.div>
   );
 }
@@ -97,14 +409,13 @@ export function GlobeMap() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedFeeling, setSelectedFeeling] = useState<typeof SAMPLE_FEELINGS[0] | null>(null);
   const [isRotating, setIsRotating] = useState(true);
-  const [visibleComments, setVisibleComments] = useState<Map<number, { x: number; y: number; opacity: number }>>(new Map());
+  const [visibleComments, setVisibleComments] = useState<Map<string, { x: number; y: number; opacity: number; feelings: typeof SAMPLE_FEELINGS }>>(new Map());
   const [showShareModal, setShowShareModal] = useState(false);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [shareFeeling, setShareFeeling] = useState("");
   const [shareMessage, setShareMessage] = useState("");
-  const [feelings, setFeelings] = useState(SAMPLE_FEELINGS);
-  const [isLoadingFeelings, setIsLoadingFeelings] = useState(true);
+  const [feelings] = useState(SAMPLE_FEELINGS); // Static 30 feelings only
   const [currentFeelingIndex, setCurrentFeelingIndex] = useState(0);
   const rotationRef = useRef<number | null>(null);
   const isUserInteracting = useRef(false);
@@ -143,42 +454,7 @@ export function GlobeMap() {
     }, 5000);
   };
 
-  // Load feelings from API
-  useEffect(() => {
-    const loadFeelings = async () => {
-      try {
-        const response = await fetch('/api/feelings');
-        if (response.ok) {
-          const data = await response.json();
-          // Transform API data to match our component format
-          const transformedFeelings = data.map((f: any) => ({
-            id: f.id,
-            lng: f.longitude,
-            lat: f.latitude,
-            feeling: f.feeling,
-            user: "someone",
-            color: FEELING_OPTIONS.find(opt => opt.feeling === f.feeling)?.color || "#22d3ee",
-            time: getTimeAgo(new Date(f.createdAt)),
-            message: f.comment || "",
-          }));
-          
-          // Combine with sample feelings if no data exists
-          if (transformedFeelings.length > 0) {
-            setFeelings(transformedFeelings);
-          }
-        }
-      } catch (error) {
-        console.error('Error loading feelings:', error);
-      } finally {
-        setIsLoadingFeelings(false);
-      }
-    };
-
-    loadFeelings();
-    // Refresh feelings every 30 seconds
-    const interval = setInterval(loadFeelings, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  // Using static 30 feelings only - no API loading needed
 
   // Helper function to get relative time
   const getTimeAgo = (date: Date) => {
@@ -261,11 +537,20 @@ export function GlobeMap() {
     if (!userLocation || !shareFeeling || !shareMessage) return;
 
     try {
-      // Save to database
+      // Get auth token
+      const token = localStorage.getItem('worldfelt_token');
+      if (!token) {
+        alert('⚠️ Please login first to share your feelings');
+        setShowShareModal(false);
+        return;
+      }
+
+      // Save to database only (won't appear on map - keeping 30 static feelings)
       const response = await fetch('/api/feelings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           latitude: userLocation.lat,
@@ -275,48 +560,38 @@ export function GlobeMap() {
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to save feeling');
-      }
-
-      const savedFeeling = await response.json();
-
-      const feelingOption = FEELING_OPTIONS.find(f => f.feeling === shareFeeling);
-      const newFeeling = {
-        id: savedFeeling.id,
-        lng: userLocation.lng,
-        lat: userLocation.lat,
-        feeling: shareFeeling,
-        user: "you",
-        color: feelingOption?.color || "#22d3ee",
-        time: "just now",
-        message: shareMessage,
-      };
-
-      setFeelings(prev => [newFeeling, ...prev]);
-      
-      // Update the map source
-      if (map.current?.getSource("feelings")) {
-        const source = map.current.getSource("feelings") as maplibregl.GeoJSONSource;
-        source.setData({
-          type: "FeatureCollection",
-          features: [newFeeling, ...feelings].map((f) => ({
-            type: "Feature" as const,
-            properties: { id: f.id, feeling: f.feeling, user: f.user, color: f.color, time: f.time },
-            geometry: { type: "Point" as const, coordinates: [f.lng, f.lat] },
-          })),
-        });
+        if (response.status === 401) {
+          // Unauthorized - token expired or invalid
+          alert('🔐 Your session expired. Please login again.');
+          localStorage.removeItem('worldfelt_token');
+          localStorage.removeItem('worldfelt_username');
+          localStorage.removeItem('worldfelt_auth');
+          window.location.href = '/globe';
+          return;
+        }
+        if (response.status === 429) {
+          // Rate limited - user already shared today
+          alert(`⏳ ${data.message || "You've already shared a feeling today. Come back tomorrow!"}`);
+          setShowShareModal(false);
+          return;
+        }
+        throw new Error(data.error || 'Failed to save feeling');
       }
 
       setShowShareModal(false);
       setShareFeeling("");
       setShareMessage("");
-      setSelectedFeeling(newFeeling);
+      
+      // Show success message - feeling saved but won't appear on map
+      alert('✨ Your feeling has been saved! Thank you for sharing.');
     } catch (error) {
       console.error('Error saving feeling:', error);
       alert('Failed to share your feeling. Please try again.');
     }
-  }, [userLocation, shareFeeling, shareMessage, feelings]);
+  }, [userLocation, shareFeeling, shareMessage]);
 
   // Toggle rotation
   const toggleRotation = useCallback(() => {
@@ -499,16 +774,22 @@ export function GlobeMap() {
         if (map.current) map.current.getCanvas().style.cursor = "";
       });
 
-      // Update visible comments positions
+      // Update visible comments positions - grouped by location
       const updateCommentPositions = () => {
         if (!map.current) return;
         
-        const newPositions = new Map<number, { x: number; y: number; opacity: number }>();
+        const newPositions = new Map<string, { x: number; y: number; opacity: number; feelings: typeof SAMPLE_FEELINGS }>();
         const bounds = map.current.getBounds();
         const zoom = map.current.getZoom();
         const center = map.current.getCenter();
         
-        feelings.forEach((feeling) => {
+        // Group feelings by approximate location
+        const groups = groupFeelingsByLocation(feelings);
+        
+        groups.forEach((groupFeelings, locationKey) => {
+          // Use the first feeling's position as the group position
+          const feeling = groupFeelings[0];
+          
           // Check if point is in view
           if (bounds && bounds.contains([feeling.lng, feeling.lat])) {
             const point = map.current!.project([feeling.lng, feeling.lat]);
@@ -527,7 +808,7 @@ export function GlobeMap() {
             
             // Only show comments at certain zoom levels and if point is on screen
             if (zoom > 1.5 && point.x > 50 && point.x < window.innerWidth - 200 && point.y > 50 && point.y < window.innerHeight - 100) {
-              newPositions.set(feeling.id, { x: point.x, y: point.y, opacity });
+              newPositions.set(locationKey, { x: point.x, y: point.y, opacity, feelings: groupFeelings });
             }
           }
         });
@@ -620,19 +901,16 @@ export function GlobeMap() {
         style={{ height: 'max(6rem, calc(env(safe-area-inset-bottom) + 5rem))' }}
       />
 
-      {/* Floating Comments near dots */}
+      {/* Galaxy Clusters - grouped feelings shown as orbiting dots */}
       <AnimatePresence>
-        {Array.from(visibleComments.entries()).map(([id, position]) => {
-          const feeling = feelings.find(f => f.id === id);
-          if (!feeling) return null;
-          
+        {Array.from(visibleComments.entries()).map(([locationKey, data]) => {
           return (
-            <FloatingComment
-              key={id}
-              feeling={feeling}
-              position={position}
-              opacity={position.opacity}
-              onClick={() => handleFeelingClick(feeling)}
+            <GalaxyCluster
+              key={locationKey}
+              feelings={data.feelings}
+              position={{ x: data.x, y: data.y }}
+              opacity={data.opacity}
+              onClick={(feeling) => handleFeelingClick(feeling)}
             />
           );
         })}
